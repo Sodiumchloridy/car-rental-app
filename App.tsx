@@ -18,14 +18,29 @@ const App = () => {
                 <Tab.Screen
                     name='suvList'
                     component={suvList}
+                    options={{
+                        tabBarLabel: 'SUV',
+                        tabBarIcon: () => null, // to remove icon placeholder
+                        headerShown: false,     // to remove the header
+                    }}
                 />
                 <Tab.Screen
                     name='sedanList'
                     component={sedanList}
+                    options={{
+                        tabBarLabel: 'Sedan',
+                        tabBarIcon: () => null,
+                        headerShown: false,
+                    }}
                 />
                 <Tab.Screen
                     name='luxuryList'
                     component={luxuryList}
+                    options={{
+                        tabBarLabel: 'Luxury',
+                        tabBarIcon: () => null,
+                        headerShown: false,     
+                    }}
                 />
             </Tab.Navigator>
         </NavigationContainer>
