@@ -4,32 +4,11 @@ import SQLite from 'react-native-sqlite-storage';
 // import firestore from '@react-native-firebase/firestore';
 import { getFirestore, collection, query, where, getDocs } from '@react-native-firebase/firestore';
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import { CarCard } from '../UI';
+import { Car } from '../Types';
+
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
-
-interface Car {
-    id: string;
-    model: string;
-    price: number;
-    image?: string;
-    category: string;
-    availability: number;
-    description?: string;
-    fuel_type?: string;
-    mileage?: number;
-}
-
-const CarCard = ({ item }: { item: Car }) => {
-    return (
-        <View style={styles.card}>
-            <Text style={styles.model}>{item.model}</Text>
-            <Text style={styles.price}>Price per Day: RM {item.price}</Text>
-            <Image source={{ uri: item.image }} style={styles.image} />
-        </View>
-    )
-}
-
-
 
 const SedanList = () => {
     const [cars, setCars] = useState<Car[]>([]);
@@ -152,7 +131,7 @@ const SedanList = () => {
     }, []);
 
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <FlatList
                 data={cars}
                 renderItem={({ item }: { item: Car }) => (
@@ -168,37 +147,9 @@ const SedanList = () => {
 
 const styles = StyleSheet.create({
     columnWrapper: {
-        justifyContent: 'space-between',  // This ensures the two columns are spaced out evenly
-        marginBottom: 10,  // Optional: adds spacing between rows
-    },
-    card: {
-        flex: 0.48,  // Ensure that each card takes approximately half the width
-        backgroundColor: '#f8f8f8',
-        borderRadius: 10,
-        padding: 10,
-        marginBottom: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 3,
-    },
-    model: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    price: {
-        fontSize: 14,
-        color: '#888',
-        marginBottom: 5,
-    },
-    image: {
-        width: '100%',
-        height: 120,  // Adjusted for a better fit
-        borderRadius: 5,
+        justifyContent: 'space-between',
         marginTop: 10,
     },
-});
+})
 
 export default SedanList;
