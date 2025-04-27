@@ -1,9 +1,10 @@
 // UI.tsx
 import React from 'react';
-import { Text, View, TouchableNativeFeedback, StyleSheet, Image } from 'react-native';
+import { Text, View, TouchableNativeFeedback, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { Car, RootStackParamList } from './Types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     return (
@@ -50,7 +51,7 @@ type NavigationProp = StackNavigationProp<RootStackParamList, 'CarDetail'>;
 export const CarCard = ({ item }: { item: Car }) => {
     const navigation = useNavigation<NavigationProp>();
     const handlePress = () => {
-        navigation.navigate('CarDetail', { car: item }); 
+        navigation.navigate('CarDetail', { car: item });
     };
 
     return (
@@ -62,6 +63,51 @@ export const CarCard = ({ item }: { item: Car }) => {
             </View>
         </TouchableNativeFeedback>
     )
+}
+
+export const ReturnButton = ({ color = 'white' }: { color?: string }) => {
+    const navigation = useNavigation<NavigationProp>();
+    return (
+        <View style={{
+            position: 'absolute',
+            zIndex: 1,
+            top: 10,
+            left: 10,
+        }}>
+            <TouchableOpacity onPress={() => { navigation.goBack() }}>
+                <Ionicons name="chevron-back" size={35} color={color} />
+            </TouchableOpacity >
+        </View>
+    )
+}
+
+export const DisplayWithLabel = ({ label, displayText }: { label: string, displayText: string }) => {
+    return (
+        <View style={{
+            flexDirection: 'row',
+            marginBottom: 10,
+            justifyContent: 'space-between',
+            alignItems: 'baseline'
+        }}>
+            <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#000', marginLeft: 15 }}>{label}</Text>
+            <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.6)', marginRight: 15 }}>{displayText}</Text>
+        </View>
+    );
+}
+
+export const InputWithLabel = (props: any) => {
+
+    const orientationDirection = (props.orientation == 'horizontal') ? 'row' : 'column';
+
+    return (
+        <View style={[inputStyles.container, { flexDirection: orientationDirection }]}>
+            <Text style={inputStyles.label}>{props.label}</Text>
+            <TextInput
+                style={[inputStyles.input, props.style]}
+                {...props}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -92,8 +138,26 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 90, 
+        height: 90,
         borderRadius: 5,
         marginTop: 10,
     },
 });
+
+const inputStyles = StyleSheet.create({
+    container: {
+        height: 100,
+    },
+    label: {
+        flex: 1,
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginLeft: 3,
+        textAlignVertical: 'center',
+    },
+    input: {
+        flex: 3,
+        fontSize: 20,
+        color: 'blue',
+    },
+})
