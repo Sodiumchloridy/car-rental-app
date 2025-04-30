@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Text, FlatList, View, Image, StyleSheet } from 'react-native';
-import SQLite from 'react-native-sqlite-storage';
+//import SQLite from 'react-native-sqlite-storage';
+let SQLite = require('react-native-sqlite-storage');
 // import firestore from '@react-native-firebase/firestore';
 import { getFirestore, collection, query, where, getDocs } from '@react-native-firebase/firestore';
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
