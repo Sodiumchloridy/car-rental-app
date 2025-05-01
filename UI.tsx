@@ -100,10 +100,31 @@ export const InputWithLabel = (props: any) => {
     const orientationDirection = (props.orientation == 'horizontal') ? 'row' : 'column';
 
     return (
-        <View style={[inputStyles.container, { flexDirection: orientationDirection }]}>
-            <Text style={inputStyles.label}>{props.label}</Text>
+        <View style={{
+            flexDirection: orientationDirection,
+            marginBottom: 10,
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: 'white'
+        }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#000', marginLeft: 15 }}>{props.label}</Text>
             <TextInput
-                style={[inputStyles.input, props.style]}
+                style={{
+                    fontSize: 14,
+                    color: 'rgba(0,0,0,0.8)',
+                    backgroundColor: 'white',
+                    width: '45%',
+                    marginRight: 10,
+                    borderWidth: 0.5,
+                    borderColor: 'rgba(0,0,0,0.8)',
+                    borderRadius: 10,
+                    shadowColor: '#000',
+                    shadowOpacity: 0.1,
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowRadius: 5,
+                    elevation: 5, 
+                }}
+                placeholderTextColor="rgba(0, 0, 0, 0.3)"
                 {...props}
             />
         </View>
@@ -144,20 +165,28 @@ const styles = StyleSheet.create({
     },
 });
 
-const inputStyles = StyleSheet.create({
-    container: {
-        height: 100,
-    },
-    label: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginLeft: 3,
-        textAlignVertical: 'center',
-    },
-    input: {
-        flex: 3,
-        fontSize: 20,
-        color: 'blue',
-    },
-})
+// const labelStyles = StyleSheet.create({
+//     container: {
+//         marginBottom: 10,
+//         justifyContent: 'space-between',
+//         alignItems: 'center',
+//     },
+//     label: {
+//         fontSize: 22,
+//         fontWeight: 'bold',
+//         color: '#000',
+//         marginLeft: 15,
+//     },
+//     input: {
+//         flex: 1,
+//         fontSize: 16,
+//         color: 'black',
+//         paddingVertical: 6,
+//         paddingHorizontal: 10,
+//         marginRight: 15,
+//         marginLeft: 10,
+//         borderBottomWidth: 1,
+//         borderColor: 'rgba(0,0,0,0.3)',
+//         textAlign: 'right',
+//     },
+// })
