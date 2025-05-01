@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, TouchableNativeFeedback, Button, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { Text, View, TouchableNativeFeedback, StyleSheet, TouchableOpacity, Platform, ScrollView, Dimensions } from 'react-native';
 import { DisplayWithLabel, InputWithLabel, ReturnButton } from '../UI';
 import { useUser } from '../UserContext';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import { count } from '@react-native-firebase/firestore';
 
 
 const formatDate = (date: Date) => {
@@ -66,6 +65,20 @@ const countDays = ({ startDate, endDate }: { startDate: Date, endDate: Date }) =
     }
 }
 
+const countTotalPrice = (totalDays: string, pricePerDay: string) => {
+    // return 2 decimal place
+    const days = Number.parseInt(totalDays);
+    const price = Number.parseFloat(pricePerDay);
+    return Math.round(days * price * 100) / 100;
+}
+
+const isValidName = (name: string) => /^[a-zA-Z\s]+$/.test(name);
+const isValidIC = (ic: string) => /^\d{6}-\d{2}-\d{4}$/.test(ic);
+const isValidPhone = (phone: string) => /^01\d-\d{7,8}$/.test(phone);
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+
+const { height } = Dimensions.get('window');
 
 const Booking = ({ route, navigation }: any) => {
     const { car } = route.params;
@@ -74,6 +87,7 @@ const Booking = ({ route, navigation }: any) => {
     const [endDate, setEndDate] = useState(new Date());
     // const [openPicker, setOpenPicker] = useState(false);
     const [totalDays, setTotalDays] = useState('');
+    const [totalPrice, setTotalPrice] = useState('0');
 
     const [renterName, setRenterName] = useState(user ? user.name : '');
     const [renterIC, setRenterIC] = useState(user ? user.ic : '');
@@ -100,13 +114,17 @@ const Booking = ({ route, navigation }: any) => {
         //         phone_no: '018-9543206',
         //     });
         // }
+        if (car) {
+            setTotalPrice(car.price);
+        }
         const days = countDays({ startDate, endDate });
         setTotalDays(days.toString());
+        setTotalPrice(countTotalPrice(days.toString(), car.price).toString());
     }, [startDate, endDate]);
 
     return (
         <View style={{ flex: 1 }}>
-            <ReturnButton />
+            <ReturnButton color='lightgrey' />
             <LinearGradient
                 colors={['rgba(0,0,0,0.8)', 'transparent']}
                 style={{
@@ -146,7 +164,11 @@ const Booking = ({ route, navigation }: any) => {
                         label={'Car Selected: '}
                         displayText={car.model}
                     />
-
+                    <DisplayWithLabel
+                        label={'Rental per day: '}
+                        displayText={'RM ' + car.price}
+                        size={16}
+                    />
                     <DateSelectorCard
                         label="Start Date"
                         date={startDate}
@@ -163,7 +185,6 @@ const Booking = ({ route, navigation }: any) => {
                         }}
                         minDate={startDate}
                     />
-
                     <DisplayWithLabel
                         label={'Total Days: '}
                         displayText={totalDays}
@@ -174,7 +195,7 @@ const Booking = ({ route, navigation }: any) => {
                 </Text>
                 <View style={{
                     marginTop: 20,
-                    marginBottom: 20,
+                    marginBottom: 15,
                     marginHorizontal: 10,
                     padding: 10,
                     backgroundColor: 'white',
@@ -191,6 +212,7 @@ const Booking = ({ route, navigation }: any) => {
                         value={renterName}
                         onChangeText={setRenterName}
                         placeholder="Enter your name"
+                        color={isValidName(renterName) ? 'black' : 'red'}
                     /><InputWithLabel
                         label="IC: "
                         orientation="horizontal"
@@ -198,6 +220,7 @@ const Booking = ({ route, navigation }: any) => {
                         onChangeText={setRenterIC}
                         placeholder="000000-00-0000"
                         keyboardType="numeric"
+                        color={isValidIC(renterIC) ? 'black' : 'red'}
                     /><InputWithLabel
                         label="Phone No.: "
                         orientation="horizontal"
@@ -205,6 +228,7 @@ const Booking = ({ route, navigation }: any) => {
                         onChangeText={setRenterPhoneNo}
                         placeholder="012-3456789"
                         keyboardType="phone-pad"
+                        color={isValidPhone(renterPhoneNo) ? 'black' : 'red'}
                     /><InputWithLabel
                         label="Email: "
                         orientation="horizontal"
@@ -212,11 +236,76 @@ const Booking = ({ route, navigation }: any) => {
                         onChangeText={setRenterEmail}
                         placeholder="abc@gmail.com"
                         keyboardType="email-address"
+                        color={isValidEmail(renterEmail) ? 'black' : 'red'}
                     />
                 </View>
             </ScrollView>
-            <View style={{ padding: 20, backgroundColor: 'powderblue' }}>
-                <Text style={{ color: 'black' }}>a place holder testing</Text>
+            {/* bottom part container */}
+            <View style={{
+                height: height * 0.12,
+                backgroundColor: 'white',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 5,
+                elevation: 5,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                flexDirection: 'row', 
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: 20,
+            }}>
+                {/* Total price container */}
+                <View>
+                    <Text style={{
+                        fontSize: 14,
+                        color: 'rgba(0,0,0,0.4)',
+                        left: '5%',
+                    }}>
+                        Total Price:
+                    </Text>
+                    <Text style={{
+                        fontSize: 28,
+                        fontWeight: 'bold',
+                        lineHeight: 28,
+                        color: '#000',
+                        paddingTop: 5,
+                        left: '12%',
+                    }}>
+                        RM {totalPrice}
+                    </Text>
+                </View>
+
+                <TouchableNativeFeedback
+                    onPress={() => {
+                        console.log('confirm booking pressed')
+                    }}
+                >
+                    <View style={{
+                        backgroundColor: '#00b14f',
+                        paddingHorizontal: 30,
+                        paddingVertical: 12,
+                        borderRadius: 30,
+                        overflow: 'hidden',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '48%'
+                    }}>
+                        <Text
+                            style={{
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                fontSize: 16,
+                                textAlign: 'center',
+                                flexWrap: 'wrap',
+                                width: '100%',
+                            }}
+                        >
+                            Confirm Booking
+                        </Text>
+                    </View>
+                </TouchableNativeFeedback>
             </View>
         </View>
     );

@@ -10,6 +10,13 @@ export interface Car {
     mileage?: number;
 }
 
+export type Renter = {
+    name: string;
+    email: string;
+    ic: string;
+    phone_no: string;
+}
+
 export type RootStackParamList = {
     Home: undefined;
     CarTabs: undefined;

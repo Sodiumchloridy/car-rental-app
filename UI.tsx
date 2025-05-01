@@ -81,7 +81,7 @@ export const ReturnButton = ({ color = 'white' }: { color?: string }) => {
     )
 }
 
-export const DisplayWithLabel = ({ label, displayText }: { label: string, displayText: string }) => {
+export const DisplayWithLabel = ({ label, displayText, size = 22 }: { label: string, displayText: string, size?: number }) => {
     return (
         <View style={{
             flexDirection: 'row',
@@ -89,7 +89,7 @@ export const DisplayWithLabel = ({ label, displayText }: { label: string, displa
             justifyContent: 'space-between',
             alignItems: 'baseline'
         }}>
-            <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#000', marginLeft: 15 }}>{label}</Text>
+            <Text style={{ fontSize: size, fontWeight: 'bold', color: '#000', marginLeft: 15 }}>{label}</Text>
             <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.6)', marginRight: 15 }}>{displayText}</Text>
         </View>
     );
@@ -111,18 +111,19 @@ export const InputWithLabel = (props: any) => {
             <TextInput
                 style={{
                     fontSize: 14,
-                    color: 'rgba(0,0,0,0.8)',
+                    color: props.color? props.color: 'rgba(0,0,0,0.8)',
+                    // color: 'rgba(0,0,0,0.8)',
                     backgroundColor: 'white',
                     width: '45%',
                     marginRight: 10,
                     borderWidth: 0.5,
-                    borderColor: 'rgba(0,0,0,0.8)',
+                    borderColor: 'rgba(0,0,0,0.2)',
                     borderRadius: 10,
                     shadowColor: '#000',
                     shadowOpacity: 0.1,
                     shadowOffset: { width: 0, height: 3 },
                     shadowRadius: 5,
-                    elevation: 5, 
+                    elevation: 2, 
                 }}
                 placeholderTextColor="rgba(0, 0, 0, 0.3)"
                 {...props}

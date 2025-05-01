@@ -11,7 +11,7 @@ const CarDetail = ({ route, navigation }: any) => {
     return (
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)' }}>
             {/* return button */}
-            <ReturnButton />
+            <ReturnButton color='lightgrey' />
 
             {/* car image container */}
             <View style={{ height: height * 0.48 }}>
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
         height: height * 0.12,
         borderColor: 'rgba(0,0,0,0.2)',
         borderWidth: 1,
+        borderBottomWidth: 0,
         paddingTop: 10,
         paddingLeft: 10,
         zIndex: 1,
