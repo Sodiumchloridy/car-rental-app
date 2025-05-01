@@ -17,10 +17,17 @@ import home from './stackScreens/homeScreen';
 import carDetail from './stackScreens/carDetail';
 import Booking from './stackScreens/booking';
 
+import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
+import Profile from './drawerScreens/profileScreen';
+import Notification from './drawerScreens/NotificationScreen';
+import CustomDrawerComponent from './drawerScreens/customDrawerComponent';
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 LogBox.ignoreLogs(['EventEmitter.removeListener']);
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 const CarTypeBottomTab = () => {
     return (
@@ -56,32 +63,56 @@ const CarTypeBottomTab = () => {
     )
 }
 
+const MainStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={home} />
+        <Stack.Screen name="CarTabs" component={CarTypeBottomTab} />
+        <Stack.Screen name="CarDetail" component={carDetail} />
+        <Stack.Screen name="Booking" component={Booking} />
+    </Stack.Navigator>
+);
+
 const App = () => {
     return (
         <UserProvider>
             <NavigationContainer>
-                <Stack.Navigator initialRouteName='Home'>
-                    <Stack.Screen
-                        name='Home'
-                        component={home}
-                        options={{ headerShown: false }}
+                <Drawer.Navigator
+                    drawerContent={(props) => <CustomDrawerComponent {...props} />}
+                    screenOptions={{
+                        drawerStyle: { width: '65%' },
+                        headerShown: false,
+                    }}
+                >
+                    <Drawer.Screen name="HomePage"
+                        component={MainStack}
+                        options={{
+                            drawerIcon: ({ color }) => (
+                                <Ionicons name="home-outline" size={20} color={color} />
+                            ),
+                            drawerLabelStyle: { fontSize: 20 },
+                        }} 
                     />
-                    <Stack.Screen
-                        name='CarTabs'
-                        component={CarTypeBottomTab}
-                        options={{ headerShown: false }}
+                    <Drawer.Screen
+                        name="Profile"
+                        component={Profile}
+                        options={{
+                            drawerIcon: ({ color }) => (
+                                <Ionicons name="man-outline" size={20} color={color} />
+                            ),
+                            drawerLabelStyle: { fontSize: 20 },
+                        }}
                     />
-                    <Stack.Screen
-                        name='CarDetail'
-                        component={carDetail}
-                        options={{ headerShown: false }}
+                    <Drawer.Screen
+                        name="Notification"
+                        component={Notification}
+                        options={{
+                            drawerIcon: ({ color }) => (
+                                <Ionicons name="notifications-outline" size={20} color={color} />
+                            ),
+                            drawerLabelStyle: { fontSize: 20 },
+                        }}
                     />
-                    <Stack.Screen
-                        name='Booking'
-                        component={Booking}
-                        options={{ headerShown: false }}
-                    />
-                </Stack.Navigator>
+                </Drawer.Navigator>
             </NavigationContainer>
         </UserProvider>
     )

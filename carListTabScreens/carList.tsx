@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Text, FlatList, View, Image, StyleSheet } from 'react-native';
+import { Text, FlatList, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 //import SQLite from 'react-native-sqlite-storage';
 let SQLite = require('react-native-sqlite-storage');
 // import firestore from '@react-native-firebase/firestore';
@@ -7,6 +7,10 @@ import { getFirestore, collection, query, where, getDocs } from '@react-native-f
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 import { CarCard } from '../UI';
 import { Car } from '../Types';
+import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { useNavigation } from '@react-navigation/native';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { DrawerParamList } from '../Types';
 
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
@@ -17,6 +21,7 @@ type Props = {
 
 
 const carList = ({ category }: Props) => {
+    const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
     const [cars, setCars] = useState<Car[]>([]);
 
     // initialize the cars table
@@ -138,6 +143,11 @@ const carList = ({ category }: Props) => {
 
     return (
         <View style={{ flex: 1 }}>
+            <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                    <Ionicons name="menu-outline" size={28} color="#000" />
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={cars}
                 renderItem={({ item }: { item: Car }) => (
