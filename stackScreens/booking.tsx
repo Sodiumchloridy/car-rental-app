@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, TouchableNativeFeedback, StyleSheet, TouchableOpacity, Platform, ScrollView, Dimensions } from 'react-native';
+import { Text, View, TouchableNativeFeedback, StyleSheet, TouchableOpacity, Platform, ScrollView, Dimensions, Alert, Image } from 'react-native';
 import { DisplayWithLabel, InputWithLabel, ReturnButton } from '../UI';
 import { useUser } from '../UserContext';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import { uploadBooking } from '../FirebaseActions';
+import { Booking } from '../Types';
 
+const paymentMethods = [
+    { name: 'FPX', icon: require('../images/fpx.png') },
+    { name: 'Touch \'n Go', icon: require('../images/tng.png') },
+    { name: 'GrabPay', icon: require('../images/grabpay.png') },
+    { name: 'DuitNow', icon: require('../images/duitnow.png') },
+];
 
 const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
@@ -27,15 +35,18 @@ const DateSelectorCard = ({ label, date, minDate, onSelectDate }: { label: strin
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.iconContainer}>
+        <View style={styles.dateCardContainer}>
+            <View style={styles.dateCardIcon}>
                 <Ionicons name="calendar" size={24} color="white" />
             </View>
             <View style={{ flex: 1 }}>
-                <Text style={styles.label}>{label}</Text>
-                <Text style={styles.dateText}>{formatDate(date)}</Text>
+                <Text style={styles.dateCardLabel}>{label}</Text>
+                <Text style={styles.dateCardText}>{formatDate(date)}</Text>
             </View>
-            <TouchableOpacity style={styles.editButton} onPress={() => setOpenPicker(true)}>
+            <TouchableOpacity
+                style={styles.dateCardEditButton}
+                onPress={() => setOpenPicker(true)}
+            >
                 <Feather name="edit" size={24} color="white" />
             </TouchableOpacity>
 
@@ -77,15 +88,13 @@ const isValidIC = (ic: string) => /^\d{6}-\d{2}-\d{4}$/.test(ic);
 const isValidPhone = (phone: string) => /^01\d-\d{7,8}$/.test(phone);
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-
 const { height } = Dimensions.get('window');
 
-const Booking = ({ route, navigation }: any) => {
+const BookingScreen = ({ route, navigation }: any) => {
     const { car } = route.params;
     const { user, setUser } = useUser();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    // const [openPicker, setOpenPicker] = useState(false);
     const [totalDays, setTotalDays] = useState('');
     const [totalPrice, setTotalPrice] = useState('0');
 
@@ -94,26 +103,68 @@ const Booking = ({ route, navigation }: any) => {
     const [renterPhoneNo, setRenterPhoneNo] = useState(user ? user.phone_no : '');
     const [renterEmail, setRenterEmail] = useState(user ? user.email : '');
 
-    // const openDatePicker = () => {
-    //     setOpenPicker(true);
-    // }
+    const [paymentMethod, setPaymentMethod] = useState('FPX');
 
-    // const onDateSelected = (event: DateTimePickerEvent, value: any) => {
-    //     setStartDate(value);
-    //     setOpenPicker(false);
-    // }
+    const submitBooking = () => {
+        if (isValidName(renterName) && isValidIC(renterIC) && isValidPhone(renterPhoneNo) && isValidEmail(renterEmail)) {
+            const booking: Booking = {
+                car_id: car.id,
+                user_id: user.id,
+                start_date: startDate,
+                end_date: endDate,
+                price: totalPrice,
+                payment: paymentMethod,
+                renter: {
+                    name: renterName,
+                    email: renterEmail,
+                    ic: renterIC,
+                    phone_no: renterPhoneNo,
+                }
+            }
+            uploadBooking(booking);
+        } else {
+            if (!isValidName(renterName)) {
+                Alert.alert(
+                    "Invalid Name",
+                    "Please enter a valid name (letters only)",
+                    [{ text: "OK" }]
+                );
+                return;
+            } else if (!isValidIC(renterIC)) {
+                Alert.alert(
+                    "Invalid IC",
+                    "Please enter a valid IC (digits and - only)\nFormat: XXXXXX-XX-XXXX",
+                    [{ text: "OK" }]
+                );
+                return;
+            } else if (!isValidPhone(renterPhoneNo)) {
+                Alert.alert(
+                    "Invalid Phone Number",
+                    "Please enter a valid Phone Number (digits and - only)\nFormat: XXX-XXXXXXX",
+                    [{ text: "OK" }]
+                );
+                return;
+            } else {
+                Alert.alert(
+                    "Invalid Email",
+                    "Please enter a valid Email\nFormat: X@mail.com",
+                    [{ text: "OK" }]
+                );
+            }
+        }
+    }
 
     // for testing autofill purpose
     useEffect(() => {
-        // if (!user) {
-        //     setUser({
-        //         id: 'user01',
-        //         name: 'Raymond',
-        //         email: 'asdkj@1gmail.com',
-        //         ic: '040920-08-0151',
-        //         phone_no: '018-9543206',
-        //     });
-        // }
+        if (!user) {
+            setUser({
+                id: 'user01',
+                name: 'Raymond',
+                email: 'asdkj@1gmail.com',
+                ic: '040920-08-0151',
+                phone_no: '018-9543206',
+            });
+        }
         if (car) {
             setTotalPrice(car.price);
         }
@@ -123,17 +174,11 @@ const Booking = ({ route, navigation }: any) => {
     }, [startDate, endDate]);
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.screenContainer}>
             <ReturnButton color='lightgrey' />
             <LinearGradient
                 colors={['rgba(0,0,0,0.8)', 'transparent']}
-                style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    height: 100,
-                }}
+                style={styles.gradientHeader}
                 locations={[0, 0.8]}
             />
             <ScrollView
@@ -141,25 +186,12 @@ const Booking = ({ route, navigation }: any) => {
                 alwaysBounceVertical={false}
                 contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
                 keyboardShouldPersistTaps="handled"
-                style={{
-                    flex: 1,
-                }}
+                style={styles.scrollView}
             >
-                <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#000', marginLeft: 10, marginTop: 60 }}>
+                <Text style={styles.sectionHeader}>
                     Booking Details
                 </Text>
-                <View style={{
-                    marginTop: 20,
-                    marginHorizontal: 10,
-                    padding: 10,
-                    backgroundColor: 'white',
-                    borderRadius: 15,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 5,
-                    elevation: 5,
-                }}>
+                <View style={styles.detailsCard}>
                     <DisplayWithLabel
                         label={'Car Selected: '}
                         displayText={car.model}
@@ -172,17 +204,13 @@ const Booking = ({ route, navigation }: any) => {
                     <DateSelectorCard
                         label="Start Date"
                         date={startDate}
-                        onSelectDate={(date) => {
-                            setStartDate(date);
-                        }}
+                        onSelectDate={(date) => setStartDate(date)}
                         minDate={new Date()}
                     />
                     <DateSelectorCard
                         label="End Date"
                         date={endDate}
-                        onSelectDate={(date) => {
-                            setEndDate(date);
-                        }}
+                        onSelectDate={(date) => setEndDate(date)}
                         minDate={startDate}
                     />
                     <DisplayWithLabel
@@ -190,22 +218,10 @@ const Booking = ({ route, navigation }: any) => {
                         displayText={totalDays}
                     />
                 </View>
-                <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#000', marginLeft: 10, marginTop: 20 }}>
+                <Text style={styles.renterDetailsHeader}>
                     Renter Details
                 </Text>
-                <View style={{
-                    marginTop: 20,
-                    marginBottom: 15,
-                    marginHorizontal: 10,
-                    padding: 10,
-                    backgroundColor: 'white',
-                    borderRadius: 15,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 5,
-                    elevation: 5,
-                }}>
+                <View style={styles.renterDetailsCard}>
                     <InputWithLabel
                         label="Name: "
                         orientation="horizontal"
@@ -213,7 +229,8 @@ const Booking = ({ route, navigation }: any) => {
                         onChangeText={setRenterName}
                         placeholder="Enter your name"
                         color={isValidName(renterName) ? 'black' : 'red'}
-                    /><InputWithLabel
+                    />
+                    <InputWithLabel
                         label="IC: "
                         orientation="horizontal"
                         value={renterIC}
@@ -221,7 +238,8 @@ const Booking = ({ route, navigation }: any) => {
                         placeholder="000000-00-0000"
                         keyboardType="numeric"
                         color={isValidIC(renterIC) ? 'black' : 'red'}
-                    /><InputWithLabel
+                    />
+                    <InputWithLabel
                         label="Phone No.: "
                         orientation="horizontal"
                         value={renterPhoneNo}
@@ -229,7 +247,8 @@ const Booking = ({ route, navigation }: any) => {
                         placeholder="012-3456789"
                         keyboardType="phone-pad"
                         color={isValidPhone(renterPhoneNo) ? 'black' : 'red'}
-                    /><InputWithLabel
+                    />
+                    <InputWithLabel
                         label="Email: "
                         orientation="horizontal"
                         value={renterEmail}
@@ -239,71 +258,43 @@ const Booking = ({ route, navigation }: any) => {
                         color={isValidEmail(renterEmail) ? 'black' : 'red'}
                     />
                 </View>
-            </ScrollView>
-            {/* bottom part container */}
-            <View style={{
-                height: height * 0.12,
-                backgroundColor: 'white',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 5,
-                elevation: 5,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                flexDirection: 'row', 
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingHorizontal: 20,
-            }}>
-                {/* Total price container */}
-                <View>
-                    <Text style={{
-                        fontSize: 14,
-                        color: 'rgba(0,0,0,0.4)',
-                        left: '5%',
-                    }}>
-                        Total Price:
-                    </Text>
-                    <Text style={{
-                        fontSize: 28,
-                        fontWeight: 'bold',
-                        lineHeight: 28,
-                        color: '#000',
-                        paddingTop: 5,
-                        left: '12%',
-                    }}>
-                        RM {totalPrice}
-                    </Text>
-                </View>
-
-                <TouchableNativeFeedback
-                    onPress={() => {
-                        console.log('confirm booking pressed')
-                    }}
-                >
-                    <View style={{
-                        backgroundColor: '#00b14f',
-                        paddingHorizontal: 30,
-                        paddingVertical: 12,
-                        borderRadius: 30,
-                        overflow: 'hidden',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '48%'
-                    }}>
-                        <Text
+                <Text style={styles.renterDetailsHeader}>
+                    Payment method:
+                </Text>
+                <View style={[styles.renterDetailsCard, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20 }]}>
+                    {paymentMethods.map((method, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => {setPaymentMethod(method.name);
+                                console.log(method.name);
+                                
+                            }}
                             style={{
-                                color: '#fff',
-                                fontWeight: 'bold',
-                                fontSize: 16,
-                                textAlign: 'center',
-                                flexWrap: 'wrap',
-                                width: '100%',
+                                alignItems: 'center',
+                                borderWidth: 2,
+                                borderColor: paymentMethod === method.name ? '#00b14f': 'white',
+                                borderRadius: 10,
+                                padding: 5,
                             }}
                         >
-                            Confirm Booking
-                        </Text>
+                            <View key={index} style={{ alignItems: 'center' }}>
+                                <Image
+                                    source={method.icon}
+                                    style={{ width: 50, height: 50, resizeMode: 'contain', backgroundColor: 'white' }}
+                                />
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </ScrollView>
+            <View style={styles.footerContainer}>
+                <View>
+                    <Text style={styles.totalPriceLabel}>Total Price:</Text>
+                    <Text style={styles.totalPriceValue}>RM {totalPrice}</Text>
+                </View>
+                <TouchableNativeFeedback onPress={submitBooking}>
+                    <View style={styles.confirmButton}>
+                        <Text style={styles.confirmButtonText}>Confirm Booking</Text>
                     </View>
                 </TouchableNativeFeedback>
             </View>
@@ -311,10 +302,117 @@ const Booking = ({ route, navigation }: any) => {
     );
 }
 
-export default Booking;
+export default BookingScreen;
 
 const styles = StyleSheet.create({
-    container: {
+    // Main container styles
+    screenContainer: {
+        flex: 1,
+    },
+    gradientHeader: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 100,
+    },
+    scrollView: {
+        flex: 1,
+    },
+
+    // Section header styles
+    sectionHeader: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#000',
+        marginLeft: 10,
+        marginTop: 60,
+    },
+    renterDetailsHeader: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#000',
+        marginLeft: 10,
+        marginTop: 20,
+    },
+
+    // Card container styles
+    detailsCard: {
+        marginTop: 20,
+        marginHorizontal: 10,
+        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    renterDetailsCard: {
+        marginTop: 20,
+        marginBottom: 15,
+        marginHorizontal: 10,
+        padding: 10,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+
+    // Footer styles
+    footerContainer: {
+        height: Dimensions.get('window').height * 0.12,
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+    },
+    totalPriceLabel: {
+        fontSize: 14,
+        color: 'rgba(0,0,0,0.4)',
+        left: '5%',
+    },
+    totalPriceValue: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        lineHeight: 28,
+        color: '#000',
+        paddingTop: 5,
+        left: '12%',
+    },
+    confirmButton: {
+        backgroundColor: '#00b14f',
+        paddingHorizontal: 30,
+        paddingVertical: 12,
+        borderRadius: 30,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '48%'
+    },
+    confirmButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+        textAlign: 'center',
+        flexWrap: 'wrap',
+        width: '100%',
+    },
+
+    // Date selector card styles
+    dateCardContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
@@ -327,22 +425,22 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginVertical: 10,
     },
-    iconContainer: {
+    dateCardIcon: {
         backgroundColor: '#000',
         borderRadius: 30,
         padding: 10,
         marginRight: 15,
     },
-    label: {
+    dateCardLabel: {
         color: '#666',
         fontSize: 14,
     },
-    dateText: {
+    dateCardText: {
         fontSize: 16,
         color: '#333',
         marginTop: 4,
     },
-    editButton: {
+    dateCardEditButton: {
         backgroundColor: 'rgba(0,0,0,0.4)',
         borderRadius: 30,
         padding: 10,

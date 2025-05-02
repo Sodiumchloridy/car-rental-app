@@ -23,7 +23,13 @@ import Notification from './drawerScreens/NotificationScreen';
 import CustomDrawerComponent from './drawerScreens/customDrawerComponent';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-LogBox.ignoreLogs(['EventEmitter.removeListener']);
+
+LogBox.ignoreLogs([
+    'EventEmitter.removeListener',
+    'This method is deprecated',
+    'Method called was `collection`',
+    'Method called was `add`'
+]);
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
