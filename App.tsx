@@ -17,7 +17,12 @@ import home from './stackScreens/homeScreen';
 import carDetail from './stackScreens/carDetail';
 import Booking from './stackScreens/booking';
 
-LogBox.ignoreLogs(['EventEmitter.removeListener']);
+LogBox.ignoreLogs([
+    'EventEmitter.removeListener',
+    'This method is deprecated',
+    'Method called was `collection`',
+    'Method called was `add`'
+]);
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();

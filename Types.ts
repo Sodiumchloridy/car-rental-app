@@ -17,6 +17,16 @@ export type Renter = {
     phone_no: string;
 }
 
+export type Booking = {
+    car_id: string;
+    user_id: string;
+    start_date: Date;
+    end_date: Date;
+    price: string;
+    payment: string;
+    renter: Renter;
+}
+
 export type RootStackParamList = {
     Home: undefined;
     CarTabs: undefined;
