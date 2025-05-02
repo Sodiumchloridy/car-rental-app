@@ -1,7 +1,12 @@
-import React from 'react'
-import { Text, View, TouchableNativeFeedback, Button, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Text, View, TouchableOpacity } from 'react-native';
+import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-const Home = ({ route, navigation }: any) => {
+import { DrawerParamList } from '../Types';
+
+const App = () => {
+    const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
     return (
         <View style={{ flex: 1 }}>
             <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
@@ -10,17 +15,10 @@ const Home = ({ route, navigation }: any) => {
                 </TouchableOpacity>
             </View>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 50, color: 'black' }}>This is home screen</Text>
-                <Button
-                    color='#00b14f'
-                    title=" Rent a Car "
-                    onPress={() => {
-                        navigation.navigate('CarTabs');
-                    }}
-                />
+                <Text style={{ fontSize: 50 }}>Profile</Text>
             </View>
         </View>
     );
 }
 
-export default Home;
+export default App;

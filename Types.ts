@@ -32,4 +32,12 @@ export type RootStackParamList = {
     CarTabs: undefined;
     CarDetail: { car: Car };
     Booking: {car: Car}; 
+    DrawerMenu: undefined;
 };
+
+export type DrawerParamList = {
+    Profile: undefined;
+    Notification: undefined;
+    MainApp: undefined;
+  };
+  
