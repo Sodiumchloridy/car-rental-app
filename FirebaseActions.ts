@@ -1,5 +1,5 @@
 import { initializeApp, getApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs } from '@react-native-firebase/firestore';
+import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs, doc, updateDoc } from '@react-native-firebase/firestore';
 import { Booking } from './Types';
 
 const firestoreDB = getFirestore();
@@ -17,6 +17,7 @@ export const uploadBooking = async (bookingData: Booking) => {
         });
         console.log(bookingData.payment);
         console.log('Booking uploaded successfully, ID:', bookingRef.id);
+        changeAvailability(bookingData.car_id, bookingData.start_date, bookingData.end_date, false);
     } catch (error) {
         console.error('Error uploading booking:', error);
     }
@@ -44,6 +45,28 @@ export const getLatestBooking = async (userID: string) => {
 }
 
 // a function that adjust the availability of a car after a booking is placed
-export const changeAvailability = async () => {
+export const changeAvailability = async (carID: string, start_date: Date, end_date: Date, isAvailable: boolean) => {
+    try {
+        // search car based on carID
+        const carSelected = doc(carsCollection, carID);
+        // get current car data
+        const carData = await getDoc(carSelected);
 
+        if (carData.exists) {
+            const available_date = new Date(end_date);
+            available_date.setDate(available_date.getDate() + 1);
+            available_date.setUTCHours(0, 0, 0, 0);
+            await updateDoc(carSelected, {
+                availability: isAvailable ? 'yes' : 'booked',
+                unavailable_from: isAvailable ? null : start_date.toISOString(),
+                unavailable_until: isAvailable ? null : available_date.toISOString(),
+            })
+            console.log(`Car availability updated: ${carID}, Availability: ${isAvailable}`)
+        } else {
+            console.log(`Car id: ${carID} not found`);
+        }
+
+    } catch (error) {
+        console.error('Error updating car availability:', error);
+    }
 }
