@@ -22,6 +22,7 @@ export type Booking = {
     user_id: string;
     start_date: Date;
     end_date: Date;
+    booking_date: Date;
     price: string;
     payment: string;
     renter: Renter;
