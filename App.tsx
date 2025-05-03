@@ -16,6 +16,7 @@ import luxuryList from './carListTabScreens/luxuryList';
 import home from './stackScreens/homeScreen';
 import carDetail from './stackScreens/carDetail';
 import Booking from './stackScreens/booking';
+import BookingConfirm from './stackScreens/bookingConfirm';
 
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './drawerScreens/profileScreen';
@@ -75,6 +76,7 @@ const MainStack = () => (
         <Stack.Screen name="CarTabs" component={CarTypeBottomTab} />
         <Stack.Screen name="CarDetail" component={carDetail} />
         <Stack.Screen name="Booking" component={Booking} />
+        <Stack.Screen name="BookingConfirm" component={BookingConfirm} />
     </Stack.Navigator>
 );
 

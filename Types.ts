@@ -34,6 +34,7 @@ export type RootStackParamList = {
     CarDetail: { car: Car };
     Booking: {car: Car}; 
     DrawerMenu: undefined;
+    BookingConfirm: {props: any};
 };
 
 export type DrawerParamList = {
