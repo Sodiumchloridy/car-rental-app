@@ -107,6 +107,9 @@ const BookingScreen = ({ route, navigation }: any) => {
 
     const submitBooking = () => {
         if (isValidName(renterName) && isValidIC(renterIC) && isValidPhone(renterPhoneNo) && isValidEmail(renterEmail) && !isNaN(Number(totalPrice))) {
+            startDate.setUTCHours(0,0,0,0);
+            endDate.setUTCHours(23,59,59,999);
+
             const booking: Booking = {
                 car_id: car.id,
                 user_id: user.id,
@@ -146,7 +149,7 @@ const BookingScreen = ({ route, navigation }: any) => {
                     [{ text: "OK" }]
                 );
                 return;
-            } else if (!isValidEmail(renterEmail)){
+            } else if (!isValidEmail(renterEmail)) {
                 Alert.alert(
                     "Invalid Email",
                     "Please enter a valid Email\nFormat: X@mail.com",
@@ -169,8 +172,8 @@ const BookingScreen = ({ route, navigation }: any) => {
                 id: 'user01',
                 name: 'Raymond',
                 email: 'asdkj@1gmail.com',
-                ic: '040920-08-0151',
-                phone_no: '018-9543206',
+                ic: '121202-02-2202',
+                phone_no: '013-2129903',
             });
         }
         if (car) {
@@ -273,14 +276,15 @@ const BookingScreen = ({ route, navigation }: any) => {
                     {paymentMethods.map((method, index) => (
                         <TouchableOpacity
                             key={index}
-                            onPress={() => {setPaymentMethod(method.name);
+                            onPress={() => {
+                                setPaymentMethod(method.name);
                                 console.log(method.name);
-                                
+
                             }}
                             style={{
                                 alignItems: 'center',
                                 borderWidth: 2,
-                                borderColor: paymentMethod === method.name ? '#00b14f': 'white',
+                                borderColor: paymentMethod === method.name ? '#00b14f' : 'white',
                                 borderRadius: 10,
                                 padding: 5,
                             }}
