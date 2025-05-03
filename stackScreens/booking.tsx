@@ -127,6 +127,7 @@ const BookingScreen = ({ route, navigation }: any) => {
             }
             uploadBooking(booking);
             getLatestBooking(user.id);
+            navigation.navigate('Booking', { car: car });
         } else {
             if (!isValidName(renterName)) {
                 Alert.alert(
