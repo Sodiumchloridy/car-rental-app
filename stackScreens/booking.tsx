@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import { uploadBooking } from '../FirebaseActions';
+import { uploadBooking, getLatestBooking } from '../FirebaseActions';
 import { Booking } from '../Types';
 
 const paymentMethods = [
@@ -106,12 +106,13 @@ const BookingScreen = ({ route, navigation }: any) => {
     const [paymentMethod, setPaymentMethod] = useState('FPX');
 
     const submitBooking = () => {
-        if (isValidName(renterName) && isValidIC(renterIC) && isValidPhone(renterPhoneNo) && isValidEmail(renterEmail)) {
+        if (isValidName(renterName) && isValidIC(renterIC) && isValidPhone(renterPhoneNo) && isValidEmail(renterEmail) && !isNaN(Number(totalPrice))) {
             const booking: Booking = {
                 car_id: car.id,
                 user_id: user.id,
                 start_date: startDate,
                 end_date: endDate,
+                booking_date: new Date(),
                 price: totalPrice,
                 payment: paymentMethod,
                 renter: {
@@ -122,6 +123,7 @@ const BookingScreen = ({ route, navigation }: any) => {
                 }
             }
             uploadBooking(booking);
+            getLatestBooking(user.id);
         } else {
             if (!isValidName(renterName)) {
                 Alert.alert(
@@ -144,10 +146,16 @@ const BookingScreen = ({ route, navigation }: any) => {
                     [{ text: "OK" }]
                 );
                 return;
-            } else {
+            } else if (!isValidEmail(renterEmail)){
                 Alert.alert(
                     "Invalid Email",
                     "Please enter a valid Email\nFormat: X@mail.com",
+                    [{ text: "OK" }]
+                );
+            } else {
+                Alert.alert(
+                    "Invalid Date Period chosen",
+                    "Please provide a valid Date period",
                     [{ text: "OK" }]
                 );
             }
