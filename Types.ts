@@ -20,9 +20,9 @@ export type Renter = {
 export type Booking = {
     car_id: string;
     user_id: string;
-    start_date: Date;
-    end_date: Date;
-    booking_date: Date;
+    start_date: string;
+    end_date: string;
+    booking_date: string;
     price: string;
     payment: string;
     renter: Renter;
@@ -34,7 +34,7 @@ export type RootStackParamList = {
     CarDetail: { car: Car };
     Booking: {car: Car}; 
     DrawerMenu: undefined;
-    BookingConfirm: {props: any};
+    BookingConfirm: {bookingID: string, bookingData: Booking};
 };
 
 export type DrawerParamList = {

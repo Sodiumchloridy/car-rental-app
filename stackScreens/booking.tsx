@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import { uploadBooking, getLatestBooking } from '../FirebaseActions';
 import { Booking } from '../Types';
+import { formatDate, formatDateTime } from '../TimeFormating';
 
 const paymentMethods = [
     { name: 'FPX', icon: require('../images/fpx.png') },
@@ -15,14 +16,6 @@ const paymentMethods = [
     { name: 'GrabPay', icon: require('../images/grabpay.png') },
     { name: 'DuitNow', icon: require('../images/duitnow.png') },
 ];
-
-const formatDate = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-};
-
 
 const DateSelectorCard = ({ label, date, minDate, onSelectDate }: { label: string; date: Date; minDate: Date; onSelectDate: (newDate: Date) => void }) => {
     const [openPicker, setOpenPicker] = useState(false);
@@ -80,7 +73,7 @@ const countTotalPrice = (totalDays: string, pricePerDay: string) => {
     // return 2 decimal place
     const days = Number.parseInt(totalDays);
     const price = Number.parseFloat(pricePerDay);
-    return Math.round(days * price * 100) / 100;
+    return (days * price).toFixed(2);
 }
 
 const isValidName = (name: string) => /^[a-zA-Z\s]+$/.test(name);
@@ -105,17 +98,20 @@ const BookingScreen = ({ route, navigation }: any) => {
 
     const [paymentMethod, setPaymentMethod] = useState('FPX');
 
-    const submitBooking = () => {
+    const submitBooking = async () => {
         if (isValidName(renterName) && isValidIC(renterIC) && isValidPhone(renterPhoneNo) && isValidEmail(renterEmail) && !isNaN(Number(totalPrice))) {
-            startDate.setUTCHours(0,0,0,0);
-            endDate.setUTCHours(23,59,59,999);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+
+            console.log("Start date: " + startDate);
+            console.log("End date" + endDate);
 
             const booking: Booking = {
                 car_id: car.id,
                 user_id: user.id,
-                start_date: startDate,
-                end_date: endDate,
-                booking_date: new Date(),
+                start_date: formatDateTime(startDate),
+                end_date: formatDateTime(endDate),
+                booking_date: formatDateTime(new Date()),
                 price: totalPrice,
                 payment: paymentMethod,
                 renter: {
@@ -125,9 +121,14 @@ const BookingScreen = ({ route, navigation }: any) => {
                     phone_no: renterPhoneNo,
                 }
             }
-            uploadBooking(booking);
-            getLatestBooking(user.id);
-            navigation.navigate('Booking', { car: car });
+            if (await uploadBooking(booking)) {
+                const bookingDetail = await getLatestBooking(user.id);
+                if (bookingDetail){
+                    navigation.navigate('BookingConfirm', { bookingID: bookingDetail.booking_id, bookingData: bookingDetail.bookingData });
+                }
+            } else {
+                Alert.alert("Booking Failed", "Please try again later.");
+            }
         } else {
             if (!isValidName(renterName)) {
                 Alert.alert(
@@ -210,7 +211,7 @@ const BookingScreen = ({ route, navigation }: any) => {
                     />
                     <DisplayWithLabel
                         label={'Rental per day: '}
-                        displayText={'RM ' + car.price}
+                        displayText={'RM ' + parseFloat(car.price).toFixed(2)}
                         size={16}
                     />
                     <DateSelectorCard
@@ -303,7 +304,7 @@ const BookingScreen = ({ route, navigation }: any) => {
             <View style={styles.footerContainer}>
                 <View>
                     <Text style={styles.totalPriceLabel}>Total Price:</Text>
-                    <Text style={styles.totalPriceValue}>RM {totalPrice}</Text>
+                    <Text style={styles.totalPriceValue}>RM {isNaN(parseFloat(totalPrice)) ? 'NaN' : parseFloat(totalPrice).toFixed(2)}</Text>
                 </View>
                 <TouchableNativeFeedback onPress={submitBooking}>
                     <View style={styles.confirmButton}>
