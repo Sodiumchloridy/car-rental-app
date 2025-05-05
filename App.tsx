@@ -3,25 +3,25 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LogBox } from 'react-native';
-import { CustomTabBar } from './UI';
-import { RootStackParamList } from './Types';
-import { UserProvider } from './UserContext';
+import { CustomTabBar } from '@/components/UI';
+import { RootStackParamList } from './src/types/Types';
+import { UserProvider } from './src/context/UserContext';
 
 // import car list screens
-import sedanList from './carListTabScreens/sedanList';
-import suvList from './carListTabScreens/suvList';
-import luxuryList from './carListTabScreens/luxuryList';
+import sedanList from './src/screens/carListTabScreens/sedanList';
+import suvList from './src/screens/carListTabScreens/suvList';
+import luxuryList from './src/screens/carListTabScreens/luxuryList';
 
 // import stack screens
-import home from './stackScreens/homeScreen';
-import carDetail from './stackScreens/carDetail';
-import Booking from './stackScreens/booking';
-import BookingConfirm from './stackScreens/bookingConfirm';
+import home from './src/screens/stackScreens/HomeScreen';
+import carDetail from './src/screens/stackScreens/CarDetail';
+import Booking from './src/screens/stackScreens/booking';
+import BookingConfirm from './src/screens/stackScreens/bookingConfirm';
 
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
-import Profile from './drawerScreens/profileScreen';
-import Notification from './drawerScreens/NotificationScreen';
-import CustomDrawerComponent from './drawerScreens/customDrawerComponent';
+import Profile from './src/screens/drawerScreens/profileScreen';
+import Notification from './src/screens/drawerScreens/NotificationScreen';
+import CustomDrawerComponent from './src/screens/drawerScreens/customDrawerComponent';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 
