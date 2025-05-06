@@ -21,6 +21,8 @@ import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './src/screens/drawerScreens/profileScreen';
 import Notification from './src/screens/drawerScreens/NotificationScreen';
+import EditProfile from './src/screens/drawerScreens/EditProfile';
+import History from './src/screens/drawerScreens/BookingHistoryScreen';
 import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LoginScreen from '@/screens/stackScreens/LoginScreen';
@@ -149,6 +151,24 @@ const AppContent = () => {
                         ),
                         drawerLabelStyle: { fontSize: 20 },
                     }}
+                />
+
+                <Drawer.Screen
+                    name="Booking history"
+                    component={History}
+                    options={{
+                        drawerIcon: ({ color }) => (
+                            <Ionicons name="document-text-outline" size={20} color={color} />
+                        ),
+                        drawerLabelStyle: { fontSize: 18 },
+                    }}
+                />
+                <Drawer.Screen
+                        name="editProfile"
+                        component={EditProfile}
+                        options={{
+                            drawerItemStyle: { display: 'none' }, // Hide from drawer menu
+                        }}
                 />
             </Drawer.Navigator>
         </NavigationContainer>
