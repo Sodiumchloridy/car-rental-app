@@ -11,16 +11,22 @@ type User = {
 const UserContext = createContext<{
     user: User;
     setUser: (user: User) => void;
+    logout: () => void;
 }>({
     user: null,
     setUser: () => {},
+    logout: () => {},
 });
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User>(null);
 
+    const logout = () => {
+        setUser(null);
+    };
+
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, logout }}>
             {children}
         </UserContext.Provider>
     );

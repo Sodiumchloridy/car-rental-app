@@ -58,7 +58,7 @@ export const changeAvailability = async (carID: string, start_date: string, end_
         // get current car data
         const carData = await getDoc(carSelected);
 
-        if (carData.exists()) {
+        if (carData.exists) {
             const available_date = parseDateTime(end_date);
             if (!available_date) {
                 console.error('Failed to parse end_date:', end_date);
@@ -86,7 +86,7 @@ export const getCar = async (carID: string) => {
     try {
         const carSelected = doc(carsCollection, carID);
         const carData = await getDoc(carSelected);
-        if (carData.exists()) {
+        if (carData.exists) {
             const car = carData.data() as Car;
             console.log("Car id: " + carID + " is found");
             return car;

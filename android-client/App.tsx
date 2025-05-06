@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LogBox } from 'react-native';
 import { CustomTabBar } from '@/components/UI';
 import { RootStackParamList } from './src/types/Types';
-import { UserProvider } from './src/context/UserContext';
+import { UserProvider, useUser } from './src/context/UserContext';
 
 // import car list screens
 import sedanList from './src/screens/carListTabScreens/sedanList';
@@ -13,17 +13,19 @@ import suvList from './src/screens/carListTabScreens/suvList';
 import luxuryList from './src/screens/carListTabScreens/luxuryList';
 
 // import stack screens
-import home from './src/screens/stackScreens/HomeScreen';
+import Home from './src/screens/stackScreens/HomeScreen';
 import carDetail from './src/screens/stackScreens/CarDetail';
 import Booking from './src/screens/stackScreens/booking';
-import BookingConfirm from './src/screens/stackScreens/bookingConfirm';
+import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
 
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './src/screens/drawerScreens/profileScreen';
 import Notification from './src/screens/drawerScreens/NotificationScreen';
-import CustomDrawerComponent from './src/screens/drawerScreens/customDrawerComponent';
+import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import LoginScreen from '@/screens/stackScreens/LoginScreen';
 
+import RegisterScreen from '@/screens/stackScreens/RegisterScreen';
 
 LogBox.ignoreLogs([
     'EventEmitter.removeListener',
@@ -73,7 +75,9 @@ const CarTypeBottomTab = () => {
 const MainStack = () => (
     // change initial route to home after booking confirm page done
     <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Home'>
-        <Stack.Screen name="Home" component={home} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="CarTabs" component={CarTypeBottomTab} />
         <Stack.Screen name="CarDetail" component={carDetail} />
         <Stack.Screen name="Booking" component={Booking} />
@@ -84,23 +88,35 @@ const MainStack = () => (
 const App = () => {
     return (
         <UserProvider>
-            <NavigationContainer>
-                <Drawer.Navigator
-                    drawerContent={(props) => <CustomDrawerComponent {...props} />}
-                    screenOptions={{
-                        drawerStyle: { width: '65%' },
-                        headerShown: false,
+            <AppContent />
+        </UserProvider>
+    );
+}
+
+// Create a separate component for the app content that uses the context
+const AppContent = () => {
+    const { user } = useUser();
+
+    return (
+        <NavigationContainer>
+            <Drawer.Navigator
+                drawerContent={(props) => <CustomDrawerComponent {...props} />}
+                screenOptions={{
+                    drawerStyle: { width: '65%' },
+                    headerShown: false,
+                }}
+            >
+                <Drawer.Screen name="HomePage"
+                    component={MainStack}
+                    options={{
+                        drawerIcon: ({ color }) => (
+                            <Ionicons name="home-outline" size={20} color={color} />
+                        ),
+                        drawerLabelStyle: { fontSize: 20 },
                     }}
-                >
-                    <Drawer.Screen name="HomePage"
-                        component={MainStack}
-                        options={{
-                            drawerIcon: ({ color }) => (
-                                <Ionicons name="home-outline" size={20} color={color} />
-                            ),
-                            drawerLabelStyle: { fontSize: 20 },
-                        }} 
-                    />
+                />
+
+                {user ? (
                     <Drawer.Screen
                         name="Profile"
                         component={Profile}
@@ -111,20 +127,32 @@ const App = () => {
                             drawerLabelStyle: { fontSize: 20 },
                         }}
                     />
+                ) : (
                     <Drawer.Screen
-                        name="Notification"
-                        component={Notification}
+                        name="Login"
+                        component={LoginScreen}
                         options={{
                             drawerIcon: ({ color }) => (
-                                <Ionicons name="notifications-outline" size={20} color={color} />
+                                <Ionicons name="log-in" size={20} color={color} />
                             ),
                             drawerLabelStyle: { fontSize: 20 },
                         }}
                     />
-                </Drawer.Navigator>
-            </NavigationContainer>
-        </UserProvider>
-    )
+                )}
+
+                <Drawer.Screen
+                    name="Notification"
+                    component={Notification}
+                    options={{
+                        drawerIcon: ({ color }) => (
+                            <Ionicons name="notifications-outline" size={20} color={color} />
+                        ),
+                        drawerLabelStyle: { fontSize: 20 },
+                    }}
+                />
+            </Drawer.Navigator>
+        </NavigationContainer>
+    );
 }
 
 export default App;

@@ -30,6 +30,8 @@ export type Booking = {
 
 export type RootStackParamList = {
     Home: undefined;
+    Login: undefined;
+    Register: undefined;
     CarTabs: undefined;
     CarDetail: { car: Car };
     Booking: {car: Car}; 
@@ -42,4 +44,3 @@ export type DrawerParamList = {
     Notification: undefined;
     MainApp: undefined;
   };
-  

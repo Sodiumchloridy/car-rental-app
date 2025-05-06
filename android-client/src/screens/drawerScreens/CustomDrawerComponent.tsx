@@ -2,8 +2,10 @@ import React from 'react'
 import { Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useUser } from '@/context/UserContext';
 
 const CustomDrawerComponent = ( props: any ) => {
+    const { user } = useUser();
     return (
         <View style={{flex: 1}}>
           <DrawerContentScrollView
@@ -23,7 +25,7 @@ const CustomDrawerComponent = ( props: any ) => {
                   fontFamily: 'Roboto-Medium',
                   marginBottom: 5,
                 }}>
-                YourName
+                {user?.name || 'Guest'}
               </Text>
             </ImageBackground>
             <View style={{flex: 1, backgroundColor: '#fff', paddingTop: 10}}>
