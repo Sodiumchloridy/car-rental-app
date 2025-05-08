@@ -95,7 +95,7 @@ const CarTypeBottomTab = () => {
 
 const MainStack = () => (
     // change initial route to home after booking confirm page done
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Test'>
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Home'>
         {/* for testing chat */}
         <Stack.Screen name="Test" component={ChatTest} />
 

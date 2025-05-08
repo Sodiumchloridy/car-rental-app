@@ -115,7 +115,7 @@ def api_messages():
     messages = conn.execute('SELECT * FROM messages WHERE chatId = ?', (chat_id,)).fetchall()
     return jsonify([dict(row) for row in messages])
 
-@app.route('/get_user_chats', method=['GET'])
+@app.route('/get_user_chats', methods=['GET'])
 def get_user_chats():
     user_id = request.args.get('user_id')
     conn = get_db()
