@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { View, StyleSheet } from 'react-native';
-import { TouchableRipple, Text, Switch } from 'react-native-paper';
 import { NavigationContainer, DefaultTheme as NavLight, DarkTheme as NavDark } from '@react-navigation/native'
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,9 +7,8 @@ import { LogBox } from 'react-native';
 import { CustomTabBar } from '@/components/UI';
 import { RootStackParamList } from './src/types/Types';
 import { UserProvider, useUser } from './src/context/UserContext';
-import {Provider as PaperProvider, DefaultTheme as PaperDefaultTheme, MD3DarkTheme as PaperDarkTheme } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme as PaperDefaultTheme, MD3DarkTheme as PaperDarkTheme, TouchableRipple, Text, Switch, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from 'react-native-paper';
 
 // import car list screens
 import sedanList from './src/screens/carListTabScreens/sedanList';

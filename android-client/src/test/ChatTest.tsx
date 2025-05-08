@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import io, { Socket } from 'socket.io-client';
+import config from "@/config.json";
 
 interface ChatMessage {
     chatId: string;
@@ -29,7 +30,7 @@ export default function ChatTest(): JSX.Element {
     useEffect(() => {
         const fetchChatHistory = async () => {
             try {
-                const response = await fetch(`http://192.168.0.111:5001/get_chat_history?chatId=${chatId}`);
+                const response = await fetch(`${config.CHAT_WEBSOCKET_API}/get_chat_history?chatId=${chatId}`);
                 const data = await response.json();
                 setChatLog(data); // Update the chatLog with previous messages
             } catch (error) {
@@ -39,7 +40,7 @@ export default function ChatTest(): JSX.Element {
 
         fetchChatHistory();
 
-        const newSocket = io('http://192.168.0.111:5001/chat', {
+        const newSocket = io(`${config.CHAT_WEBSOCKET_API}/chat`, {
             transports: ['websocket'],
         });
         setSocket(newSocket);
