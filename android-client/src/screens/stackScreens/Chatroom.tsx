@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import io, { Socket } from 'socket.io-client';
+import config from '@/config.json';
+import { ReturnButton } from '@/components/UI';
 
 interface ChatMessage {
     chatId: string;
@@ -10,28 +12,25 @@ interface ChatMessage {
     timestamp: string;
 }
 
-export default function ChatTest(): JSX.Element {
+const Chatroom = ({ route, navigation }: any) => {
+    const { chatId, userName, userId, ownerId } = route.params;
+
     const [isOwner, setIsOwner] = useState(false);
     const [message, setMessage] = useState<string>('');
     const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
     const [socket, setSocket] = useState<Socket | null>(null);
+    const flatListRef = useRef<FlatList>(null);
 
+    const onPressFunc = () => {
+        navigation.navigate('ChatList')
+    }
 
-    const generateChatId = (a: string, b: string): string => {
-        return a < b ? `${a}_${b}` : `${b}_${a}`;
-    };
-
-    const userId = isOwner ? 'user456' : 'user123';
-    const otherId = isOwner ? 'user123' : 'user456';
-    const chatId = generateChatId(userId, otherId);
-
-    // Fetch previous messages from the server when the component is mounted
     useEffect(() => {
         const fetchChatHistory = async () => {
             try {
-                const response = await fetch(`http://192.168.0.111:5001/get_chat_history?chatId=${chatId}`);
+                const response = await fetch(`${config.Websocker_Server}/get_chat_history?chatId=${chatId}`);
                 const data = await response.json();
-                setChatLog(data); // Update the chatLog with previous messages
+                setChatLog(data);
             } catch (error) {
                 console.log('Error fetching chat history:', error);
             }
@@ -39,34 +38,32 @@ export default function ChatTest(): JSX.Element {
 
         fetchChatHistory();
 
-        const newSocket = io('http://192.168.0.111:5001/chat', {
+        const newSocket = io(`${config.Websocker_Server}/chat`, {
             transports: ['websocket'],
         });
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
-            console.log('[ChatTest] Socket connected:', newSocket.id);
-            newSocket.emit('join_chat', { userId, ownerId: otherId });
+            console.log('[Chatroom] Socket connected:', newSocket.id);
+            newSocket.emit('join_chat', { chatId, userId, ownerId });
         });
 
         newSocket.on('receive_message', (msg: ChatMessage) => {
-            console.log('[ChatTest] Received message:', msg);
-            setChatLog((prev) => [...prev, msg]); // Append new messages to the chat log
+            setChatLog((prev) => [...prev, msg]);
         });
 
         newSocket.on('disconnect', () => {
-            console.log('[ChatTest] Socket disconnected');
+            console.log('[Chatroom] Socket disconnected');
         });
 
         newSocket.on('connect_error', (err: Error) => {
-            console.log('[ChatTest] Connection Error:', err);
+            console.log('[Chatroom] Connection Error:', err);
         });
 
         return () => {
-            console.log('[ChatTest] Cleaning up socket');
             newSocket.disconnect();
         };
-    }, [isOwner]);
+    }, [chatId, userId, ownerId]); // more accurate dependency list
 
     const sendMessage = () => {
         if (message.trim() && socket) {
@@ -113,50 +110,61 @@ export default function ChatTest(): JSX.Element {
     };
 
     return (
-        <View style={{ padding: 20, flex: 1 }}>
-            <Text style={{ marginBottom: 10, fontWeight: 'bold', color: 'black' }}>
-                Current Role: {isOwner ? 'Owner' : 'User'} ({userId})
-            </Text>
-            <Button
-                title={`Switch to ${isOwner ? 'User' : 'Owner'} Mode`}
-                onPress={() => {
-                    setChatLog([]); // Clear chat log when switching
-                    setIsOwner(!isOwner);
-                }}
-            />
-
-            <FlatList
-                data={chatLog}
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={renderItem}
-                style={{ flex: 1, marginTop: 20 }}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 20 }}
-            />
-
-            <View style={styles.inputRow}>
-                <TextInput
-                    value={message}
-                    onChangeText={setMessage}
-                    placeholder="Type a message"
-                    placeholderTextColor="gray"
-                    style={styles.input}
-                />
-                <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
-                    <Ionicons name="paper-plane" size={28} color={'#00b14f'} />
-                </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+            <ReturnButton />
+            <View style={{
+                alignContent: 'center',
+                alignItems: 'center',
+                borderBottomColor: 'grey',
+                paddingVertical: 10,
+                borderWidth: 0.5,
+                backgroundColor: 'rgba(0,0,0,0.8)'
+            }}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 24 }}>{userName}</Text>
             </View>
+            <View style={{ padding: 20, flex: 1, paddingVertical: 5 }}>
+                <FlatList
+                    ref={flatListRef}
+                    data={chatLog}
+                    keyExtractor={(_, index) => index.toString()}
+                    renderItem={renderItem}
+                    style={{ flex: 1, marginTop: 0 }}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                    onContentSizeChange={() => {
+                        flatListRef.current?.scrollToEnd({ animated: true });
+                    }}
+                />
 
+
+                <View style={styles.inputRow}>
+                    <TextInput
+                        value={message}
+                        onChangeText={setMessage}
+                        placeholder="Type a message"
+                        placeholderTextColor="gray"
+                        style={styles.input}
+                    />
+                    <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+                        <Ionicons name="paper-plane" size={28} color={'#00b14f'} />
+                    </TouchableOpacity>
+                </View>
+
+
+            </View>
 
         </View>
     );
+
 }
+
+export default Chatroom;
 
 const styles = StyleSheet.create({
     inputRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        paddingVertical: 5
     },
     input: {
         flex: 1,

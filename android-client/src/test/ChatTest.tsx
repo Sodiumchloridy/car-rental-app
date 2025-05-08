@@ -21,8 +21,8 @@ export default function ChatTest(): JSX.Element {
         return a < b ? `${a}_${b}` : `${b}_${a}`;
     };
 
-    const userId = isOwner ? 'user456' : 'user123';
-    const otherId = isOwner ? 'user123' : 'user456';
+    const userId = isOwner ? '8e6ec9b5-bf51-4656-a898-3054c5976c93' : '58107c8a-e695-417e-9934-627d4b836263';
+    const otherId = isOwner ? '58107c8a-e695-417e-9934-627d4b836263' : '8e6ec9b5-bf51-4656-a898-3054c5976c93';
     const chatId = generateChatId(userId, otherId);
 
     // Fetch previous messages from the server when the component is mounted

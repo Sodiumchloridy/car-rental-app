@@ -183,6 +183,22 @@ def profile(current_user):
 def logout(current_user):
     return jsonify({'message': 'Logged out successfully'}), 200
 
+@app.route('/get_user_name', methods=['GET'])
+def get_user_name():
+    user_uuid = request.args.get('uuid')
+    if not user_uuid:
+        return jsonify({'error': 'UUID is required'}), 400
+
+    conn = get_db()
+    user = conn.execute('SELECT name FROM users WHERE uuid = ?', (user_uuid,)).fetchone()
+    conn.close()
+
+    if user:
+        return jsonify({'name': user['name']}), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
+
 if __name__ == '__main__':
     init_db()
     seed_db()

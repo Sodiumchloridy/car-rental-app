@@ -22,6 +22,7 @@ import Home from './src/screens/stackScreens/HomeScreen';
 import carDetail from './src/screens/stackScreens/CarDetail';
 import Booking from './src/screens/stackScreens/booking';
 import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
+import Chatroom from '@/screens/stackScreens/Chatroom';
 
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './src/screens/drawerScreens/ProfileScreen';
@@ -29,7 +30,8 @@ import Notification from './src/screens/drawerScreens/NotificationScreen';
 import EditProfile from './src/screens/drawerScreens/EditProfile';
 import History from './src/screens/drawerScreens/BookingHistoryScreen';
 import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
-import ChatList from '@/screens/drawerScreens/ChatList';
+import ChatList from '@/screens/stackScreens/ChatList';
+
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LoginScreen from '@/screens/stackScreens/LoginScreen';
@@ -101,6 +103,8 @@ const MainStack = () => (
 
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="ChatList" component={ChatList} />
+        <Stack.Screen name="Chatroom" component={Chatroom} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="CarTabs" component={CarTypeBottomTab} />
         <Stack.Screen name="CarDetail" component={carDetail} />
@@ -200,6 +204,15 @@ const AppContent = () => {
                         options={{
                             drawerIcon: ({ color }) => (
                                 <Ionicons name="home-outline" size={20} color={color} />
+                            ),
+                            drawerLabelStyle: { fontSize: 20 },
+                        }}
+                    />
+                    <Drawer.Screen name="Chats"
+                        component={ChatList}
+                        options={{
+                            drawerIcon: ({ color }) => (
+                                <Ionicons name="chatbubbles-outline" size={20} color={color} />
                             ),
                             drawerLabelStyle: { fontSize: 20 },
                         }}

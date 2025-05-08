@@ -48,11 +48,9 @@ def get_db():
 
 @socketio.on('join_chat', namespace='/chat')
 def join_chat(data):
+    chat_id = data['chatId']
     user_id = data['userId']
     owner_id = data['ownerId']
-
-    #create chat id
-    chat_id = f"{user_id}_{owner_id}" if user_id < owner_id else f"{owner_id}_{user_id}"
 
     conn = get_db()
     conn.execute('INSERT OR IGNORE INTO user_chats (userId, chatId) VALUES (?, ?)', (user_id, chat_id))
@@ -62,6 +60,7 @@ def join_chat(data):
     join_room(chat_id)
     print(f"User {user_id} joined chat {chat_id}")
     emit('joined_chat', {'chatId': chat_id}, room=chat_id)
+
 
 # handle incoming message
 @socketio.on('send_message', namespace='/chat')
