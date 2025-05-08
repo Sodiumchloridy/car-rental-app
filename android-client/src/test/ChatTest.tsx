@@ -1,70 +1,98 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import io, { Socket } from 'socket.io-client';
 
 interface ChatMessage {
     chatId: string;
     senderId: string;
     message: string;
+    timestamp: string;
 }
 
-const socket: Socket = io('http://192.168.0.111:5001/chat', {
-    transports: ['websocket'], // Avoid long-polling
-});
-
-const userId = 'user123';
-const ownerId = 'owner456';
-const chatId = userId < ownerId ? `${userId}_${ownerId}` : `${ownerId}_${userId}`;
-
 export default function ChatTest(): JSX.Element {
+    const [isOwner, setIsOwner] = useState(false);
     const [message, setMessage] = useState<string>('');
     const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
+    const [socket, setSocket] = useState<Socket | null>(null);
 
+
+    const generateChatId = (a: string, b: string): string => {
+        return a < b ? `${a}_${b}` : `${b}_${a}`;
+    };
+
+    const userId = isOwner ? 'user456' : 'user123';
+    const otherId = isOwner ? 'user123' : 'user456';
+    const chatId = generateChatId(userId, otherId);
+
+    // Fetch previous messages from the server when the component is mounted
     useEffect(() => {
-        console.log('[ChatTest] useEffect triggered');
+        const fetchChatHistory = async () => {
+            try {
+                const response = await fetch(`http://192.168.0.111:5001/get_chat_history?chatId=${chatId}`);
+                const data = await response.json();
+                setChatLog(data); // Update the chatLog with previous messages
+            } catch (error) {
+                console.log('Error fetching chat history:', error);
+            }
+        };
 
-        socket.on('connect', () => {
-            console.log('[ChatTest] Socket connected:', socket.id);
-            socket.emit('join_chat', { userId, ownerId });
+        fetchChatHistory();
+
+        const newSocket = io('http://192.168.0.111:5001/chat', {
+            transports: ['websocket'],
+        });
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log('[ChatTest] Socket connected:', newSocket.id);
+            newSocket.emit('join_chat', { userId, ownerId: otherId });
         });
 
-        socket.on('receive_message', (msg: ChatMessage) => {
+        newSocket.on('receive_message', (msg: ChatMessage) => {
             console.log('[ChatTest] Received message:', msg);
-            setChatLog((prev) => [...prev, msg]);
+            setChatLog((prev) => [...prev, msg]); // Append new messages to the chat log
         });
 
-        socket.on('disconnect', () => {
+        newSocket.on('disconnect', () => {
             console.log('[ChatTest] Socket disconnected');
         });
 
-        socket.on('connect_error', (err: Error) => {
+        newSocket.on('connect_error', (err: Error) => {
             console.log('[ChatTest] Connection Error:', err);
         });
 
         return () => {
             console.log('[ChatTest] Cleaning up socket');
-            socket.off('receive_message');
-            socket.disconnect();
+            newSocket.disconnect();
         };
-    }, []);
+    }, [isOwner]);
 
     const sendMessage = () => {
-        if (message.trim()) {
+        if (message.trim() && socket) {
             const payload: ChatMessage = {
                 chatId,
                 senderId: userId,
                 message,
+                timestamp: new Date().toISOString(),
             };
             console.log('[ChatTest] Sending message:', payload);
             socket.emit('send_message', payload);
-            setMessage('');
-        } else {
-            console.log('[ChatTest] Empty message not sent');
+            setMessage(''); // Clear the input after sending
         }
     };
 
     const renderItem = ({ item }: { item: ChatMessage }) => {
         const isSender = item.senderId === userId;
+        const formattedTime = item.timestamp
+            ? new Date(item.timestamp).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+            })
+            : '';
         return (
             <View
                 style={[
@@ -77,40 +105,69 @@ export default function ChatTest(): JSX.Element {
                 >
                     {item.message}
                 </Text>
+                {item.timestamp && (
+                    <Text style={styles.timestampText}>{formattedTime}</Text>
+                )}
             </View>
         );
     };
 
-    console.log('[ChatTest] ChatLog:', chatLog); // Debugging line to check the state
-
     return (
         <View style={{ padding: 20, flex: 1 }}>
+            <Text style={{ marginBottom: 10, fontWeight: 'bold', color: 'black' }}>
+                Current Role: {isOwner ? 'Owner' : 'User'} ({userId})
+            </Text>
+            <Button
+                title={`Switch to ${isOwner ? 'User' : 'Owner'} Mode`}
+                onPress={() => {
+                    setChatLog([]); // Clear chat log when switching
+                    setIsOwner(!isOwner);
+                }}
+            />
+
             <FlatList
                 data={chatLog}
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={renderItem}
-                style={{ flex: 1 }}
+                style={{ flex: 1, marginTop: 20 }}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 20 }} // Ensure space for the input box
+                contentContainerStyle={{ paddingBottom: 20 }}
             />
-            <TextInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Type a message"
-                style={styles.input}
-            />
-            <Button title="Send" onPress={sendMessage} />
+
+            <View style={styles.inputRow}>
+                <TextInput
+                    value={message}
+                    onChangeText={setMessage}
+                    placeholder="Type a message"
+                    placeholderTextColor="gray"
+                    style={styles.input}
+                />
+                <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+                    <Ionicons name="paper-plane" size={28} color={'#00b14f'} />
+                </TouchableOpacity>
+            </View>
+
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    inputRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
     input: {
+        flex: 1,
         color: 'black',
         borderWidth: 1,
-        marginBottom: 10,
+        borderColor: 'gray',
         padding: 8,
         borderRadius: 4,
+    },
+    sendButton: {
+        marginLeft: 10,
     },
     messageContainer: {
         maxWidth: '80%',
@@ -130,13 +187,18 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
     },
     messageText: {
-        fontSize: 16,
-        padding: 5,
+        fontSize: 15,
     },
     senderText: {
         color: 'white',
     },
     receiverText: {
         color: 'black',
+    },
+    timestampText: {
+        fontSize: 10,
+        color: 'gray',
+        marginTop: 4,
+        textAlign: 'right',
     },
 });
