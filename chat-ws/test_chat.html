@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Chat Test</title>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>WebSocket Chat Test (Owner/User)</h2>
+  
+  <label>User ID: <input type="text" id="userId" value="owner456"></label><br>
+  <label>Other User ID: <input type="text" id="otherId" value="user123"></label><br>
+  <button onclick="joinChat()">Join Chat</button>
+  
+  <br><br>
+  
+  <input type="text" id="messageInput" placeholder="Type message...">
+  <button onclick="sendMessage()">Send</button>
+
+  <ul id="chatLog"></ul>
+
+  <script>
+    const socket = io('http://192.168.0.111:5001/chat', {
+      transports: ['websocket']
+    });
+
+    let currentChatId = '';
+    let senderId = '';
+
+    socket.on('connect', () => {
+      console.log('[Client] Connected:', socket.id);
+    });
+
+    function joinChat() {
+      senderId = document.getElementById('userId').value;
+      const otherId = document.getElementById('otherId').value;
+
+      const data = {
+        userId: senderId,
+        ownerId: otherId
+      };
+
+      socket.emit('join_chat', data);
+      console.log('[Client] Emitted join_chat:', data);
+    }
+
+    socket.on('joined_chat', (data) => {
+      currentChatId = data.chatId;
+      console.log('[Client] Joined Chat:', currentChatId);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById('messageInput').value;
+      if (!currentChatId || !senderId || !msg) return;
+
+      const data = {
+        chatId: currentChatId,
+        senderId: senderId,
+        message: msg
+      };
+
+      socket.emit('send_message', data);
+      console.log('[Client] Sent message:', data);
+    }
+
+    socket.on('receive_message', (msg) => {
+      const li = document.createElement('li');
+      li.innerText = `${msg.senderId}: ${msg.message}`;
+      document.getElementById('chatLog').appendChild(li);
+    });
+  </script>
+</body>
+</html>

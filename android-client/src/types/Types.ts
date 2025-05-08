@@ -29,6 +29,9 @@ export type Booking = {
 }
 
 export type RootStackParamList = {
+    // test
+    Test: undefined;
+    
     Home: undefined;
     Login: undefined;
     Register: undefined;
