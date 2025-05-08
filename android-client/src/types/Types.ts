@@ -43,6 +43,8 @@ export type RootStackParamList = {
     
     Home: undefined;
     Login: undefined;
+    ChatList: undefined;
+    Chatroom: undefined;
     Register: undefined;
     CarTabs: undefined;
     CarDetail: { car: Car };
