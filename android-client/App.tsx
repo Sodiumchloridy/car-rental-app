@@ -35,6 +35,9 @@ import LoginScreen from '@/screens/stackScreens/LoginScreen';
 import RegisterScreen from '@/screens/stackScreens/RegisterScreen';
 import ListCarScreen from '@/screens/stackScreens/CarListingScreen';
 
+// test
+import ChatTest from '@/test/ChatTest';
+
 LogBox.ignoreLogs([
     'EventEmitter.removeListener',
     'This method is deprecated',
@@ -90,7 +93,10 @@ const CarTypeBottomTab = () => {
 
 const MainStack = () => (
     // change initial route to home after booking confirm page done
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Home'>
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Test'>
+        {/* for testing chat */}
+        <Stack.Screen name="Test" component={ChatTest} />
+
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
