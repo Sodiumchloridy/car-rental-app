@@ -12,9 +12,10 @@ import {
     Platform,
     StatusBar
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '../../context/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
-import { FLASK_API } from '@/utils/Config';
+import config from '@/config.json';
 
 const { height, width } = Dimensions.get('window');
 
@@ -31,19 +32,20 @@ const LoginScreen = ({ navigation }: any) => {
         }
         setLoading(true);
         try {
-            const response = await fetch(`${FLASK_API}/login`, {
+            const response = await fetch(`${config.FLASK_API}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
             if (response.ok) {
+                await AsyncStorage.setItem('userToken', data.token);
                 setUser({
-                    id: data.user.id.toString(),
+                    id: data.user.uuid,
                     name: data.user.name,
                     email: data.user.email,
-                    ic: '', // Not returned by backend, set as needed
-                    phone_no: '', // Not returned by backend, set as needed
+                    ic_number: data.user.ic,
+                    phone_number: data.user.phone_no,
                 });
                 Alert.alert('Success', 'Login successful!');
                 navigation.navigate('Home');

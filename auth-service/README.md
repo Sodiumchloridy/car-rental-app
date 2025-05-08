@@ -125,12 +125,33 @@ CREATE TABLE users (
 
 ## Integration with React Native App
 
-To connect this authentication service with the React Native app, update the `Config.ts` file in your React Native project to point to your Flask server's address:
+To connect the React Native app with the authentication service, create a `config.json` file in your React Native project's `src` directory:
+
+```json
+{
+  "FLASK_API": "http://10.0.2.2:5000"  // For Android emulator
+  // Use "http://localhost:5000" for iOS simulator
+  // Use "http://YOUR_IP_ADDRESS:5000" for physical devices
+}
+```
+
+Then import it in your files:
 
 ```typescript
-export const FLASK_API = "http://10.0.2.2:5000"; // For Android emulator
-// or
-export const FLASK_API = "http://localhost:5000"; // For iOS simulator
-// or
-export const FLASK_API = "http://YOUR_IP_ADDRESS:5000"; // For physical devices
+// Direct import
+import config from '../../config.json';
+
+// Then use it like:
+const apiUrl = config.FLASK_API;
+```
+
+Make sure your `tsconfig.json` has JSON module resolution enabled:
+
+```json
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    // ... other options
+  }
+}
 ```

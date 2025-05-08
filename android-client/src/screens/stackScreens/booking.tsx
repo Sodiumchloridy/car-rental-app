@@ -92,8 +92,8 @@ const BookingScreen = ({ route, navigation }: any) => {
     const [totalPrice, setTotalPrice] = useState('0');
 
     const [renterName, setRenterName] = useState(user ? user.name : '');
-    const [renterIC, setRenterIC] = useState(user ? user.ic : '');
-    const [renterPhoneNo, setRenterPhoneNo] = useState(user ? user.phone_no : '');
+    const [renterIC, setRenterIC] = useState(user ? user.ic_number : '');
+    const [renterPhoneNo, setRenterPhoneNo] = useState(user ? user.phone_number : '');
     const [renterEmail, setRenterEmail] = useState(user ? user.email : '');
 
     const [paymentMethod, setPaymentMethod] = useState('FPX');
@@ -174,8 +174,8 @@ const BookingScreen = ({ route, navigation }: any) => {
                 id: 'user01',
                 name: 'Raymond',
                 email: 'asdkj@1gmail.com',
-                ic: '121202-02-2202',
-                phone_no: '013-2129903',
+                ic_number: '121202-02-2202',
+                phone_number: '013-2129903',
             });
         }
         if (car) {

@@ -19,7 +19,7 @@ import Booking from './src/screens/stackScreens/booking';
 import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
 
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
-import Profile from './src/screens/drawerScreens/profileScreen';
+import Profile from './src/screens/drawerScreens/ProfileScreen';
 import Notification from './src/screens/drawerScreens/NotificationScreen';
 import EditProfile from './src/screens/drawerScreens/EditProfile';
 import History from './src/screens/drawerScreens/BookingHistoryScreen';
@@ -28,6 +28,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import LoginScreen from '@/screens/stackScreens/LoginScreen';
 
 import RegisterScreen from '@/screens/stackScreens/RegisterScreen';
+import ListCarScreen from '@/screens/stackScreens/CarListingScreen';
 
 LogBox.ignoreLogs([
     'EventEmitter.removeListener',
@@ -84,6 +85,7 @@ const MainStack = () => (
         <Stack.Screen name="CarDetail" component={carDetail} />
         <Stack.Screen name="Booking" component={Booking} />
         <Stack.Screen name="BookingConfirm" component={BookingConfirm} />
+        <Stack.Screen name="ListCarScreen" component={ListCarScreen} />
     </Stack.Navigator>
 );
 
@@ -164,11 +166,11 @@ const AppContent = () => {
                     }}
                 />
                 <Drawer.Screen
-                        name="editProfile"
-                        component={EditProfile}
-                        options={{
-                            drawerItemStyle: { display: 'none' }, // Hide from drawer menu
-                        }}
+                    name="EditProfile"
+                    component={EditProfile}
+                    options={{
+                        drawerItemStyle: { display: 'none' }, // Hide from drawer menu
+                    }}
                 />
             </Drawer.Navigator>
         </NavigationContainer>

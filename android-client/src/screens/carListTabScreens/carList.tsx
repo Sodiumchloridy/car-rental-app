@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Text, FlatList, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-//import SQLite from 'react-native-sqlite-storage';
 let SQLite = require('react-native-sqlite-storage');
-// import firestore from '@react-native-firebase/firestore';
 import { getFirestore, collection, query, where, getDocs } from '@react-native-firebase/firestore';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 import { CarCard } from '@/components/UI';
 import { Car } from '../../types/Types';
 import { DrawerNavigationProp } from '@react-navigation/drawer'
@@ -28,6 +25,8 @@ const carList = ({ category }: Props) => {
     const _createCarsTable = () => {
         try {
             db.transaction((tx: any) => {
+                tx.executeSql('DROP TABLE IF EXISTS cars');
+
                 tx.executeSql(
                     `CREATE TABLE IF NOT EXISTS cars (
                     id INTEGER PRIMARY KEY,
@@ -38,7 +37,8 @@ const carList = ({ category }: Props) => {
                     availability INTEGER DEFAULT 1,
                     description TEXT,
                     fuel_type TEXT,
-                    mileage REAL
+                    mileage REAL,
+                    owner_name TEXT NOT NULL
                     )`
                 );
             })
@@ -56,18 +56,21 @@ const carList = ({ category }: Props) => {
             const carsRef = collection(firestoreDB, 'cars');
             const sedanQuery = query(carsRef, where('category', '==', category));
             const snapshot = await getDocs(sedanQuery);
-            const carData: Car[] = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                model: doc.data().model as string,
-                price: doc.data().price as number,
-                image: doc.data().image as string | undefined,
-                category: doc.data().category as string,
-                availability: doc.data().availability as number,
-                description: doc.data().description as string | undefined,
-                fuel_type: doc.data().fuel_type as string | undefined,
-                mileage: doc.data().mileage as number | undefined,
-            }));
+            const carData: Car[] = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    model: data.model as string,
+                    price: data.price as number,
+                    image: data.image as string | undefined,
+                    category: data.category as string,
+                    availability: data.availability,
+                    description: data.description as string | undefined,
+                    fuel_type: data.fuel_type as string | undefined,
+                    mileage: data.mileage as number | undefined,
+                    owner_name: (data.owner_name as string) || '',
+                };
+            });
             return carData;
         } catch (error) {
             console.error('Firestore fetch error:', error);
@@ -80,18 +83,19 @@ const carList = ({ category }: Props) => {
         db.transaction((tx: any) => {
             carData.forEach((car: Car) => {
                 tx.executeSql(
-                    `INSERT OR REPLACE INTO cars (id, model, price, image, category, availability, description, fuel_type, mileage)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT OR REPLACE INTO cars (id, model, price, image, category, availability, description, fuel_type, mileage, owner_name)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         car.id,
                         car.model,
                         car.price,
                         car.image,
                         car.category,
-                        car.availability,
+                        car.availability ? 1 : 0,
                         car.description,
                         car.fuel_type,
                         car.mileage,
+                        car.owner_name,
                     ],
                     () => { },
                     (error: any) => console.error('Error syncing car to SQLite:', error)

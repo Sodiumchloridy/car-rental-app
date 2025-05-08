@@ -1,25 +1,18 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-type User = {
-    id: string;
-    name: string;
-    email: string;
-    ic: string;
-    phone_no: string;
-} | null;
+import { User } from '@/types/Types';
 
 const UserContext = createContext<{
-    user: User;
-    setUser: (user: User) => void;
+    user: User | null;
+    setUser: (user: User | null) => void;
     logout: () => void;
 }>({
     user: null,
-    setUser: () => {},
-    logout: () => {},
+    setUser: () => { },
+    logout: () => { },
 });
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const logout = () => {
         setUser(null);

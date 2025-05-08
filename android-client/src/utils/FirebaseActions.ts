@@ -1,4 +1,3 @@
-import { initializeApp, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs, doc, updateDoc } from '@react-native-firebase/firestore';
 import { Booking, Car } from '../types/Types';
 import { formatDateTime, parseDateTime } from './TimeFormating';
@@ -6,8 +5,6 @@ import { formatDateTime, parseDateTime } from './TimeFormating';
 const firestoreDB = getFirestore();
 const bookingsCollection = collection(firestoreDB, 'bookings');
 const carsCollection = collection(firestoreDB, 'cars');
-
-
 
 // this function is to upload user booking
 export const uploadBooking = async (bookingData: Booking) => {
@@ -95,5 +92,35 @@ export const getCar = async (carID: string) => {
         }
     } catch (error) {
         console.log("Error when retrieving car: " + error)
+    }
+}
+
+/**
+ * Function to add a car listing to Firestore
+ * @param {CarListing} car - The car listing object to be added
+ * @returns {Promise<boolean>} - Returns true if the car listing was added successfully, false otherwise
+ * @throws {Error} - Throws an error if there was an issue adding the car listing
+ */
+interface CarListing {
+    model: string;
+    price: number;
+    image?: string;
+    category: string;
+    availability: number;
+    description?: string;
+    fuel_type?: string;
+    mileage?: number;
+    owner_name: string;
+}
+
+export const addCarListing = async (car: CarListing) => {
+    try {
+        console.log('[FirebaseActions] Attempting addDoc to carsCollection...');
+        const carRef = await addDoc(carsCollection, car);
+        console.log('[FirebaseActions] addDoc successful. Car listing added, ID:', carRef.id);
+        return true;
+    } catch (error) {
+        console.error('[FirebaseActions] Error in addDoc during addCarListing:', error);
+        return false;
     }
 }

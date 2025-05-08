@@ -15,7 +15,8 @@ import {
 } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
-import { FLASK_API } from '@/utils/Config';
+import config from '@/config.json';
+import axios from 'axios'; // Import axios
 
 const { height, width } = Dimensions.get('window');
 
@@ -43,20 +44,17 @@ const RegisterScreen = ({ navigation }: any) => {
 
         setLoading(true);
         try {
-            const response = await fetch(`${FLASK_API}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email,
-                    password,
-                    name,
-                    ic_number: icNumber,
-                    phone_number: phoneNumber
-                }),
+            const response = await axios.post(`${config.FLASK_API}/register`, {
+                email,
+                password,
+                name,
+                ic_number: icNumber,
+                phone_number: phoneNumber
+            }, {
+                timeout: 10000 // 10 seconds timeout
             });
-            const data = await response.json();
 
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) { // Check for successful status codes
                 Alert.alert(
                     'Success',
                     'Registration successful! Please log in.',
@@ -68,10 +66,21 @@ const RegisterScreen = ({ navigation }: any) => {
                     ]
                 );
             } else {
-                Alert.alert('Registration Failed', data.error || 'Failed to register');
+                // This part might not be reached if axios throws an error for non-2xx responses
+                Alert.alert('Registration Failed', response.data.error || 'Failed to register');
             }
-        } catch (error) {
-            Alert.alert('Error', 'Network error. Please try again.');
+        } catch (error: any) { // Use 'any' for error type or a more specific axios error type
+            if (axios.isAxiosError(error)) {
+                if (error.code === 'ECONNABORTED') {
+                    Alert.alert('Error', 'Request timed out. Please try again.');
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+                }
+            } else {
+                // Handle non-Axios errors
+                Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+            }
             console.error(error);
         } finally {
             setLoading(false);

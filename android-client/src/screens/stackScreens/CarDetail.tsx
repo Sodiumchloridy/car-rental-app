@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ReturnButton } from '@/components/UI';
 
@@ -48,9 +48,7 @@ const CarDetail = ({ route, navigation }: any) => {
                     {car.model}
                 </Text>
                 <Text style={{ marginTop: 5, fontSize: 14, color: 'rgba(0,0,0,0.5)', }}>
-                    Owner: Mr.White
-                    {/* this one can change ltr */}
-                    {/* remembered to add car owner column to the car table */}
+                    Owner: {car.owner_name}
                 </Text>
 
                 {/* vertical scrollable */}
@@ -207,7 +205,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         paddingVertical: 12,
         borderRadius: 30,
-        overflow: 'hidden', 
+        overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
     },
