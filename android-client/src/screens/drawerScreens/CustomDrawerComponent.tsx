@@ -1,13 +1,16 @@
 import React from 'react'
-import { Text, View, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
+import { TouchableRipple, Switch, useTheme } from 'react-native-paper';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useUser } from '@/context/UserContext';
 
 const CustomDrawerComponent = ( props: any ) => {
     const { user } = useUser();
+    const { isDarkTheme, toggleTheme } = props;
+    const theme = useTheme();
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: theme.colors.background }}>
           <DrawerContentScrollView
             {...props}
             contentContainerStyle={{backgroundColor: '#8200d6'}}>
@@ -28,8 +31,22 @@ const CustomDrawerComponent = ( props: any ) => {
                 {user?.name || 'Guest'}
               </Text>
             </ImageBackground>
-            <View style={{flex: 1, backgroundColor: '#fff', paddingTop: 10}}>
+            <View style={{flex: 1, backgroundColor: theme.colors.background, paddingTop: 10}}>
               <DrawerItemList {...props} />
+              
+              <View style={styles.preferenceContainer}>
+                <TouchableRipple onPress={toggleTheme}>
+                    <View style={styles.preference}>
+                        <View style={styles.preferenceLeft}>
+                            <Ionicons name="moon-outline" size={20} color={theme.colors.text} />
+                            <Text style={[styles.preferenceText, { color: theme.colors.text }]}>
+                                Dark Theme
+                            </Text>
+                        </View>
+                        <Switch value={isDarkTheme} onValueChange={toggleTheme} />
+                    </View>
+                </TouchableRipple>
+              </View>
             </View>
           </DrawerContentScrollView>
           <View style={{padding: 20, borderTopWidth: 1, borderTopColor: '#ccc'}}>
@@ -50,5 +67,26 @@ const CustomDrawerComponent = ( props: any ) => {
         </View>
       );
 }
+
+const styles = StyleSheet.create({
+    preferenceContainer: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    preference: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+    },
+    preferenceLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    preferenceText: {
+        fontSize: 16,
+        marginLeft: 32,
+    }
+});
 
 export default CustomDrawerComponent;

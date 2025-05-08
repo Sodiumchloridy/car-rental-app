@@ -6,6 +6,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useNavigation } from '@react-navigation/native';
 import { DrawerParamList } from '../../types/Types';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useTheme } from 'react-native-paper';
 
 
 const BookingHistroyScreen = () => {
@@ -13,6 +14,7 @@ const BookingHistroyScreen = () => {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
   const [history, setHistory] = useState<BookingWithId[]>([]);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
 
   useEffect(() => {
     const unsubscribe = firestore()
@@ -36,39 +38,58 @@ const BookingHistroyScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#00b14f" />
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
 
   if (history.length === 0) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.noDataText}>No bookings found.</Text>
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
+        <Text style={[styles.noDataText, { color: theme.colors.text }]}>
+          No bookings found.
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.background  }}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu-outline" size={28} color="#000" />
+          <Ionicons name="menu-outline" size={28} color={theme.colors.text} />
         </TouchableOpacity>
       </View>
       <FlatList
         data={history}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>Booking Confirmed</Text>
-            <Text style={styles.detailText}>Car ID: {item.car_id}</Text>
-            <Text style={styles.detailText}>Start: {item.start_date}</Text>
-            <Text style={styles.detailText}>End: {item.end_date}</Text>
-            <Text style={styles.detailText}>Price: RM {parseFloat(item.price).toFixed(2)}</Text>
-            <Text style={styles.detailText}>Payment: {item.payment}</Text>
-            <Text style={styles.detailText}>Booked by: {item.renter.name}</Text>
+          <View style={[styles.card, { 
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border
+          }]}>
+            <Text style={[styles.title, { color: theme.colors.primary }]}>
+              Booking Confirmed
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              Car ID: {item.car_id}
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              Start: {item.start_date}
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              End: {item.end_date}
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              Price: RM {parseFloat(item.price).toFixed(2)}
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              Payment: {item.payment}
+            </Text>
+            <Text style={[styles.detailText, { color: theme.colors.text }]}>
+              Booked by: {item.renter.name}
+            </Text>
           </View>
         )}
         contentContainerStyle={styles.listContainer}
@@ -80,13 +101,11 @@ const BookingHistroyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   listContainer: {
     padding: 16,
   },
   card: {
-    backgroundColor: 'white',
     borderRadius: 15,
     padding: 16,
     marginBottom: 12,
@@ -99,12 +118,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#00b14f',
     marginBottom: 12,
   },
   detailText: {
     fontSize: 14,
-    color: '#333',
     marginBottom: 6,
   },
   centered: {

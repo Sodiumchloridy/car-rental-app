@@ -5,10 +5,17 @@ import { Car, RootStackParamList } from '@/types/Types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTheme } from 'react-native-paper';
 
 export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
+    const theme = useTheme();
     return (
-        <View style={{ flexDirection: 'row', backgroundColor: '#f2f2f2' }}>
+        <View style={{ 
+            flexDirection: 'row', 
+            backgroundColor: theme.colors.surface,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border
+        }}>
             {state.routes.map((route: any, index: number) => {
                 const { options } = descriptors[route.key];
                 const label = options.tabBarLabel !== undefined
@@ -17,21 +24,20 @@ export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 
                 const isFocused = state.index === index;
 
-                const onPress = () => {
-                    navigation.navigate(route.name);
-                };
-
                 return (
-                    <TouchableNativeFeedback key={route.key} onPress={onPress}>
+                    <TouchableNativeFeedback 
+                        key={route.key} 
+                        onPress={() => navigation.navigate(route.name)}
+                    >
                         <View style={{
                             flex: 1,
                             paddingVertical: 15,
-                            backgroundColor: isFocused ? '#00b14f' : '#fff', // Darker on focus
+                            backgroundColor: isFocused ? theme.colors.primary : theme.colors.surface,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
                             <Text style={{
-                                color: isFocused ? '#fff' : '#888',
+                                color: isFocused ? theme.colors.surface : theme.colors.text,
                                 fontWeight: 'bold',
                                 fontSize: 14,
                             }}>
@@ -50,16 +56,22 @@ type NavigationProp = StackNavigationProp<RootStackParamList, 'CarDetail'>;
 
 export const CarCard = ({ item }: { item: Car }) => {
     const navigation = useNavigation<NavigationProp>();
+    const theme = useTheme();
     const handlePress = () => {
         navigation.navigate('CarDetail', { car: item });
     };
 
     return (
         <TouchableNativeFeedback onPress={handlePress}>
-            <View style={styles.card}>
+            <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border
+            }]}>
                 <Image source={{ uri: item.image }} style={styles.image} />
-                <Text style={styles.model}>{item.model}</Text>
-                <Text style={styles.price}>Price per Day: RM {item.price}</Text>
+                <Text style={[styles.model, { color: theme.colors.text }]}>
+                    {item.model}
+                </Text>
+                <Text style={[styles.price, { color: theme.colors.text }]}>
+                    Price per Day: RM {item.price}
+                </Text>
             </View>
         </TouchableNativeFeedback>
     )

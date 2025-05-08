@@ -8,6 +8,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DrawerParamList } from '../../types/Types';
+import { useTheme } from 'react-native-paper';
 
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
@@ -20,6 +21,7 @@ type Props = {
 const carList = ({ category }: Props) => {
     const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
     const [cars, setCars] = useState<Car[]>([]);
+    const theme = useTheme();
 
     // initialize the cars table
     const _createCarsTable = () => {
@@ -146,10 +148,10 @@ const carList = ({ category }: Props) => {
     }, []);
 
     return (
-        <View style={{ flex: 1 }}>
-            <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.background }}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Ionicons name="menu-outline" size={28} color="#000" />
+                    <Ionicons name="menu-outline" size={28} color={theme.colors.text} />
                 </TouchableOpacity>
             </View>
             <FlatList
