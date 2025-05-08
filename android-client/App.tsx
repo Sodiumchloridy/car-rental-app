@@ -29,6 +29,8 @@ import Notification from './src/screens/drawerScreens/NotificationScreen';
 import EditProfile from './src/screens/drawerScreens/EditProfile';
 import History from './src/screens/drawerScreens/BookingHistoryScreen';
 import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
+import ChatList from '@/screens/drawerScreens/ChatList';
+
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LoginScreen from '@/screens/stackScreens/LoginScreen';
 

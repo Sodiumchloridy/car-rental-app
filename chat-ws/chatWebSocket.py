@@ -115,6 +115,20 @@ def api_messages():
     messages = conn.execute('SELECT * FROM messages WHERE chatId = ?', (chat_id,)).fetchall()
     return jsonify([dict(row) for row in messages])
 
+@app.route('/get_user_chats', method=['GET'])
+def get_user_chats():
+    user_id = request.args.get('user_id')
+    conn = get_db()
+    cursor = conn.execute('''
+        SELECT c.chatId, c.userId, c.ownerId, c.lastMessage, c.timestamp, c.unreadCount
+        FROM user_chats uc
+        JOIN chats c ON uc.chatId = c.chatId
+        WHERE uc.userId = ?
+        ORDER BY c.timestamp DESC
+    ''', (user_id,))
+    chats = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify(chats)
 
 if __name__ == '__main__':
     init_db()
