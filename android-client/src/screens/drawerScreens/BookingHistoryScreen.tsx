@@ -16,6 +16,7 @@ const BookingHistroyScreen = () => {
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
+  //Retrieve the booking records from firebase and sort the records in descending order by date
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('bookings')
