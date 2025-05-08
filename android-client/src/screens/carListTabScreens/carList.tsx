@@ -31,7 +31,7 @@ const carList = ({ category }: Props) => {
 
                 tx.executeSql(
                     `CREATE TABLE IF NOT EXISTS cars (
-                    id INTEGER PRIMARY KEY,
+                    id TEXT PRIMARY KEY,
                     model TEXT NOT NULL,
                     price REAL NOT NULL,
                     image TEXT,
