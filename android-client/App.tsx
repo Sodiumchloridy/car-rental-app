@@ -24,7 +24,6 @@ import Chatroom from '@/screens/stackScreens/Chatroom';
 
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './src/screens/drawerScreens/ProfileScreen';
-import Notification from './src/screens/drawerScreens/NotificationScreen';
 import EditProfile from './src/screens/drawerScreens/EditProfile';
 import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
 import ChatList from '@/screens/stackScreens/ChatList';
@@ -241,17 +240,6 @@ const AppContent = () => {
                                 }}
                             />
                         )}
-
-                    <Drawer.Screen
-                        name="Notification"
-                        component={Notification}
-                        options={{
-                            drawerIcon: ({ color }) => (
-                                <Ionicons name="notifications-outline" size={20} color={color} />
-                            ),
-                            drawerLabelStyle: { fontSize: 20 },
-                        }}
-                    />
 
                     <Drawer.Screen
                         name="EditProfile"
