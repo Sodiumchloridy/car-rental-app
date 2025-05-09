@@ -16,17 +16,16 @@ import suvList from './src/screens/carListTabScreens/suvList';
 import luxuryList from './src/screens/carListTabScreens/luxuryList';
 
 // import stack screens
-import Home from './src/screens/stackScreens/HomeScreen';
+import HomeScreen from './src/screens/stackScreens/HomeScreen';
 import carDetail from './src/screens/stackScreens/CarDetail';
 import Booking from './src/screens/stackScreens/booking';
 import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
 import Chatroom from '@/screens/stackScreens/Chatroom';
 
-import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import Profile from './src/screens/drawerScreens/ProfileScreen';
 import Notification from './src/screens/drawerScreens/NotificationScreen';
 import EditProfile from './src/screens/drawerScreens/EditProfile';
-import History from './src/screens/drawerScreens/BookingHistoryScreen';
 import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
 import ChatList from '@/screens/stackScreens/ChatList';
 
@@ -62,10 +61,11 @@ const CarTypeBottomTab = () => {
                 headerShown: false,
                 tabBarStyle: {
                     backgroundColor: theme.colors.surface,
-                    borderTopColor: theme.colors.border
+                    borderTopColor: theme.colors.onBackground,
+                    borderTopWidth: 1,
                 },
                 tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.text
+                tabBarInactiveTintColor: theme.colors.onBackground
             }}
         >
             <Tab.Screen
@@ -99,7 +99,7 @@ const MainStack = () => (
         {/* for testing chat */}
         <Stack.Screen name="Test" component={ChatTest} />
 
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ChatList" component={ChatList} />
         <Stack.Screen name="Chatroom" component={Chatroom} />
@@ -195,7 +195,7 @@ const AppContent = () => {
                         headerShown: false,
                     }}
                 >
-                    <Drawer.Screen name="HomePage"
+                    <Drawer.Screen name="Home Screen"
                         component={MainStack}
                         options={{
                             drawerIcon: ({ color }) => (
@@ -204,39 +204,43 @@ const AppContent = () => {
                             drawerLabelStyle: { fontSize: 20 },
                         }}
                     />
-                    <Drawer.Screen name="Chats"
-                        component={ChatList}
-                        options={{
-                            drawerIcon: ({ color }) => (
-                                <Ionicons name="chatbubbles-outline" size={20} color={color} />
-                            ),
-                            drawerLabelStyle: { fontSize: 20 },
-                        }}
-                    />
 
-                    {user ? (
-                        <Drawer.Screen
-                            name="Profile"
-                            component={Profile}
-                            options={{
-                                drawerIcon: ({ color }) => (
-                                    <Ionicons name="man-outline" size={20} color={color} />
-                                ),
-                                drawerLabelStyle: { fontSize: 20 },
-                            }}
-                        />
-                    ) : (
-                        <Drawer.Screen
-                            name="Login"
-                            component={LoginScreen}
-                            options={{
-                                drawerIcon: ({ color }) => (
-                                    <Ionicons name="log-in" size={20} color={color} />
-                                ),
-                                drawerLabelStyle: { fontSize: 20 },
-                            }}
-                        />
-                    )}
+
+                    {user ?
+                        (<>
+                            <Drawer.Screen name="Chats"
+                                component={ChatList}
+                                options={{
+                                    drawerIcon: ({ color }) => (
+                                        <Ionicons name="chatbubbles-outline" size={20} color={color} />
+                                    ),
+                                    drawerLabelStyle: { fontSize: 20 },
+                                }}
+                            />
+
+                            <Drawer.Screen
+                                name="Profile"
+                                component={Profile}
+                                options={{
+                                    drawerIcon: ({ color }) => (
+                                        <Ionicons name="man-outline" size={20} color={color} />
+                                    ),
+                                    drawerLabelStyle: { fontSize: 20 },
+                                }}
+                            />
+                        </>
+                        ) : (
+                            <Drawer.Screen
+                                name="Login"
+                                component={LoginScreen}
+                                options={{
+                                    drawerIcon: ({ color }) => (
+                                        <Ionicons name="enter-outline" size={20} color={color} />
+                                    ),
+                                    drawerLabelStyle: { fontSize: 20 },
+                                }}
+                            />
+                        )}
 
                     <Drawer.Screen
                         name="Notification"
@@ -249,16 +253,6 @@ const AppContent = () => {
                         }}
                     />
 
-                    <Drawer.Screen
-                        name="Booking history"
-                        component={History}
-                        options={{
-                            drawerIcon: ({ color }) => (
-                                <Ionicons name="document-text-outline" size={20} color={color} />
-                            ),
-                            drawerLabelStyle: { fontSize: 18 },
-                        }}
-                    />
                     <Drawer.Screen
                         name="EditProfile"
                         component={EditProfile}

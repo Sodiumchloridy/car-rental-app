@@ -1,6 +1,6 @@
 // UI.tsx
 import React from 'react';
-import { Text, View, TouchableNativeFeedback, StyleSheet, Image, TouchableOpacity, TextInput} from 'react-native';
+import { Text, View, TouchableNativeFeedback, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { Car, RootStackParamList } from '@/types/Types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
@@ -10,11 +10,11 @@ import { useTheme } from 'react-native-paper';
 export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const theme = useTheme();
     return (
-        <View style={{ 
-            flexDirection: 'row', 
+        <View style={{
+            flexDirection: 'row',
             backgroundColor: theme.colors.surface,
             borderTopWidth: 1,
-            borderTopColor: theme.colors.border
+            borderTopColor: theme.colors.onBackground,
         }}>
             {state.routes.map((route: any, index: number) => {
                 const { options } = descriptors[route.key];
@@ -25,8 +25,8 @@ export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                 const isFocused = state.index === index;
 
                 return (
-                    <TouchableNativeFeedback 
-                        key={route.key} 
+                    <TouchableNativeFeedback
+                        key={route.key}
                         onPress={() => navigation.navigate(route.name)}
                     >
                         <View style={{
@@ -37,7 +37,7 @@ export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                             justifyContent: 'center',
                         }}>
                             <Text style={{
-                                color: isFocused ? theme.colors.surface : theme.colors.text,
+                                color: isFocused ? theme.colors.surface : theme.colors.onBackground,
                                 fontWeight: 'bold',
                                 fontSize: 14,
                             }}>
@@ -63,13 +63,14 @@ export const CarCard = ({ item }: { item: Car }) => {
 
     return (
         <TouchableNativeFeedback onPress={handlePress}>
-            <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border
+            <View style={[styles.card, {
+                backgroundColor: theme.colors.surface, borderColor: theme.colors.onBackground
             }]}>
                 <Image source={{ uri: item.image }} style={styles.image} />
-                <Text style={[styles.model, { color: theme.colors.text }]}>
+                <Text style={[styles.model, { color: theme.colors.onBackground }]}>
                     {item.model}
                 </Text>
-                <Text style={[styles.price, { color: theme.colors.text }]}>
+                <Text style={[styles.price, { color: theme.colors.onBackground }]}>
                     Price per Day: RM {item.price}
                 </Text>
             </View>
@@ -93,7 +94,7 @@ export const ReturnButton = ({ color = 'white' }: { color?: string }) => {
     )
 }
 
-export const DisplayWithLabel = ({ label, displayText, size = 22, displaySize = 16}: { label: string; displayText: string; size?: number; displaySize?:number }) => {
+export const DisplayWithLabel = ({ label, displayText, size = 22, displaySize = 16 }: { label: string; displayText: string; size?: number; displaySize?: number }) => {
     const labelLineHeight = size * 1.2;
     const displayLineHeight = displaySize * 1.4;
 

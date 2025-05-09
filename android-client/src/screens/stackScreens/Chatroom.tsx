@@ -28,7 +28,7 @@ const Chatroom = ({ route, navigation }: any) => {
     useEffect(() => {
         const fetchChatHistory = async () => {
             try {
-                const response = await fetch(`${config.Websocker_Server}/get_chat_history?chatId=${chatId}`);
+                const response = await fetch(`${config.WEBSOCKET_SERVER}/get_chat_history?chatId=${chatId}`);
                 const data = await response.json();
                 setChatLog(data);
             } catch (error) {
@@ -38,7 +38,7 @@ const Chatroom = ({ route, navigation }: any) => {
 
         fetchChatHistory();
 
-        const newSocket = io(`${config.Websocker_Server}/chat`, {
+        const newSocket = io(`${config.WEBSOCKET_SERVER}/chat`, {
             transports: ['websocket'],
         });
         setSocket(newSocket);

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Alert, 
-    ActivityIndicator, 
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    ActivityIndicator,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUser } from '../../context/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
 import config from '@/config.json';
+import axios from 'axios';
 
 const { height, width } = Dimensions.get('window');
 
@@ -32,16 +33,18 @@ const LoginScreen = ({ navigation }: any) => {
         }
         setLoading(true);
         try {
-            const response = await fetch(`${config.FLASK_API}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+            const response = await axios.post(`${config.FLASK_API}/login`, {
+                email,
+                password,
+            }, {
+                timeout: 5000 // 10 seconds timeout
             });
-            const data = await response.json();
-            if (response.ok) {
+
+            const data = await response.data;
+            if (response.status === 200) {
                 await AsyncStorage.setItem('userToken', data.token);
                 setUser({
-                    id: data.user.uuid,
+                    uuid: data.user.uuid,
                     name: data.user.name,
                     email: data.user.email,
                     ic_number: data.user.ic,
@@ -62,7 +65,7 @@ const LoginScreen = ({ navigation }: any) => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
-            
+
             {/* Gradient Background */}
             <LinearGradient
                 colors={['#1a1a1a', '#333333', '#000000']}
@@ -70,7 +73,7 @@ const LoginScreen = ({ navigation }: any) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
             />
-            
+
             {/* Floating Card Container */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -84,10 +87,10 @@ const LoginScreen = ({ navigation }: any) => {
                         </View>
                         <Text style={styles.brandName}>Car Rental</Text>
                     </View>
-                    
+
                     <Text style={styles.welcomeText}>Welcome Back</Text>
                     <Text style={styles.subtitleText}>Sign in to continue to your account</Text>
-                    
+
                     {/* Input Fields */}
                     <View style={styles.inputGroup}>
                         <Text style={styles.inputLabel}>Email</Text>
@@ -101,7 +104,7 @@ const LoginScreen = ({ navigation }: any) => {
                             placeholder="yourname@example.com"
                         />
                     </View>
-                    
+
                     <View style={styles.inputGroup}>
                         <Text style={styles.inputLabel}>Password</Text>
                         <TextInput
@@ -113,16 +116,16 @@ const LoginScreen = ({ navigation }: any) => {
                             placeholder="Enter your password"
                         />
                     </View>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                         style={styles.forgotPasswordBtn}
                         onPress={() => Alert.alert('Forgot Password', 'Please email to support@car-rental.com for assistance.')}
                     >
                         <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                     </TouchableOpacity>
-                    
+
                     {/* Sign In Button */}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.signInButton}
                         onPress={handleLogin}
                         disabled={loading}
@@ -133,7 +136,7 @@ const LoginScreen = ({ navigation }: any) => {
                             <Text style={styles.signInButtonText}>Sign In</Text>
                         )}
                     </TouchableOpacity>
-                    
+
                     {/* Create Account Link */}
                     <View style={styles.createAccountContainer}>
                         <Text style={styles.noAccountText}>Don't have an account?</Text>

@@ -2,10 +2,12 @@ import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LinearGradient from 'react-native-linear-gradient';
+import { useUser } from '@/context/UserContext';
 
 const { width } = Dimensions.get('window');
 
 const Home = ({ route, navigation }: any) => {
+    const { user } = useUser();
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -31,23 +33,31 @@ const Home = ({ route, navigation }: any) => {
                 <Text style={styles.titleText}>Welcome Home</Text>
                 <Text style={styles.subtitleText}>Ready to find your next ride?</Text>
 
-                <TouchableOpacity
+
+                {user ? (<><TouchableOpacity
                     style={styles.actionButton}
                     onPress={() => {
                         navigation.navigate('CarTabs');
                     }}
                 >
                     <Text style={styles.actionButtonText}>Rent a Car</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
+                </TouchableOpacity><TouchableOpacity
                     style={styles.actionButton}
                     onPress={() => {
                         navigation.navigate('ListCarScreen');
                     }}
                 >
-                    <Text style={styles.actionButtonText}>List Your Car</Text>
-                </TouchableOpacity>
+                        <Text style={styles.actionButtonText}>List Your Car</Text>
+                    </TouchableOpacity></>) : (
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={() => {
+                            navigation.navigate('Login');
+                        }}
+                    >
+                        <Text style={styles.actionButtonText}>Login</Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     );

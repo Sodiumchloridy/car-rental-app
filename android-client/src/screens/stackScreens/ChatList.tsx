@@ -8,11 +8,13 @@ import config from '@/config.json';
 import { ReturnButton } from '@/components/UI';
 import LinearGradient from 'react-native-linear-gradient';
 
-interface ChatMessage {
+interface Chat {
     chatId: string;
-    senderId: string;
-    message: string;
-    timestamp: string;
+    userId: string;
+    ownerId: string;
+    lastMessage: string;
+    timestamp: number;
+    unreadCount: number;
 }
 
 const ChatList = ({ navigation }: any) => {
@@ -21,21 +23,21 @@ const ChatList = ({ navigation }: any) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user?.id) {
+        if (user?.uuid) {
             axios
-                .get(`${config.Websocker_Server}/get_user_chats?user_id=${user.id}`)
+                .get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`)
                 .then(async (res) => {
                     const chats = res.data;
 
                     // Extract unique user UUIDs to fetch names
                     const userIds = new Set<string>();
-                    chats.forEach(chat => {
+                    chats.forEach((chat: Chat) => {
                         userIds.add(chat.userId);
                         userIds.add(chat.ownerId);
                     });
 
                     // Remove current user ID — no need to fetch our own name
-                    userIds.delete(user.id);
+                    userIds.delete(user.uuid);
 
                     // Fetch all names in parallel
                     const idToName: { [uuid: string]: string } = {};
@@ -52,8 +54,8 @@ const ChatList = ({ navigation }: any) => {
                     );
 
                     // Attach displayName to each chat
-                    const enrichedChats = chats.map(chat => {
-                        const otherUserId = chat.ownerId === user.id ? chat.userId : chat.ownerId;
+                    const enrichedChats = chats.map((chat: Chat) => {
+                        const otherUserId = chat.ownerId === user.uuid ? chat.userId : chat.ownerId;
                         return {
                             ...chat,
                             displayName: idToName[otherUserId] || 'Unknown',
@@ -68,14 +70,14 @@ const ChatList = ({ navigation }: any) => {
                     setLoading(false);
                 });
         }
-    }, [user?.id]);
+    }, [user?.uuid]);
     if (loading) {
         return <ActivityIndicator size="large" />;
     }
 
     const renderItem = ({ item }: any) => (
         <TouchableOpacity
-            onPress={() => navigation.navigate('Chatroom', { chatId: item.chatId, ownerId: item.ownerId, userId: user?.id, userName: item.displayName })}
+            onPress={() => navigation.navigate('Chatroom', { chatId: item.chatId, ownerId: item.ownerId, userId: user?.uuid, userName: item.displayName })}
             style={{ padding: 16, borderBottomWidth: 1, borderColor: '#ddd' }}
         >
             <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 18 }}>
@@ -101,7 +103,7 @@ const ChatList = ({ navigation }: any) => {
             />
             <FlatList
                 data={chats}
-                keyExtractor={(item) => item.chatId}
+                keyExtractor={(item: Chat) => item.chatId}
                 renderItem={renderItem}
                 style={{
                     marginTop: 50

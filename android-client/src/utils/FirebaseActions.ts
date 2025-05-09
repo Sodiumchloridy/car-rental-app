@@ -15,7 +15,6 @@ export const uploadBooking = async (bookingData: Booking) => {
             start_date: bookingData.start_date,
             end_date: bookingData.end_date,
         });
-        console.log(bookingData.payment);
         console.log('Booking uploaded successfully, ID:', bookingRef.id);
         changeAvailability(bookingData.car_id, bookingData.start_date, bookingData.end_date, false);
         return true;
@@ -111,6 +110,7 @@ interface CarListing {
     fuel_type?: string;
     mileage?: number;
     owner_name: string;
+    owner_uuid: string;
 }
 
 export const addCarListing = async (car: CarListing) => {
@@ -124,3 +124,90 @@ export const addCarListing = async (car: CarListing) => {
         return false;
     }
 }
+
+/**
+ * Fetches the booking history for a specific user from Firestore.
+ * 
+ * @param user_uuid - The UUID of the user whose booking history is to be fetched
+ * @returns A promise that resolves to an array of Booking objects with their IDs
+ * @throws Will throw an error if the Firestore fetch operation fails
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const bookingHistory = await fetchBookingHistory('user-uuid');
+ *   console.log(bookingHistory);
+ * } catch (error) {
+ *   console.error('Failed to fetch booking history:', error);
+ * }
+ * ```
+ */
+type BookingWithId = Booking & { id: string };
+export const fetchBookingHistory = async (user_uuid: string): Promise<BookingWithId[]> => {
+    try {
+        // Replace the old namespaced query with the modular API
+        const bookingsQuery = query(
+            bookingsCollection, // This constant is already defined using the modular API
+            where('user_id', '==', user_uuid),
+            orderBy('booking_date', 'desc')
+        );
+        const snapshot = await getDocs(bookingsQuery);
+
+        const bookingData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        })) as BookingWithId[];
+
+        return bookingData;
+    } catch (error) {
+        console.error("Error fetching history:", error);
+        return [];
+    }
+};
+
+
+/**
+ * Fetches cars from Firestore database based on the specified category.
+ * 
+ * @param category - The category of cars to fetch (e.g., 'sedan', 'suv', etc.)
+ * @returns A promise that resolves to an array of Car objects
+ * @throws Will throw an error if the Firestore fetch operation fails
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const sedanCars = await fetchCars('sedan');
+ *   console.log(sedanCars);
+ * } catch (error) {
+ *   console.error('Failed to fetch cars:', error);
+ * }
+ * ```
+ */
+export const fetchCars = async (category: String): Promise<Car[]> => {
+    try {
+        const firestoreDB = getFirestore();
+        const carsRef = collection(firestoreDB, 'cars');
+        const sedanQuery = query(carsRef, where('category', '==', category));
+        const snapshot = await getDocs(sedanQuery);
+        const carData: Car[] = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                model: data.model as string,
+                price: data.price as number,
+                image: data.image as string | undefined,
+                category: data.category as string,
+                availability: data.availability,
+                description: data.description as string | undefined,
+                fuel_type: data.fuel_type as string | undefined,
+                mileage: data.mileage as number | undefined,
+                owner_name: data.owner_name as string,
+                owner_uuid: data.owner_uuid as string,
+            };
+        });
+        return carData;
+    } catch (error) {
+        console.error('Firestore fetch error:', error);
+        throw error;
+    }
+};

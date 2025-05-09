@@ -9,10 +9,11 @@ export interface Car {
     fuel_type?: string;
     mileage?: number;
     owner_name: string;
+    owner_uuid: string;
 }
 
 export interface User {
-    id: string;
+    uuid: string;
     name: string;
     email: string;
     ic_number: string;

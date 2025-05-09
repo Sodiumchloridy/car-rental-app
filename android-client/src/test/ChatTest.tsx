@@ -30,7 +30,7 @@ export default function ChatTest(): JSX.Element {
     useEffect(() => {
         const fetchChatHistory = async () => {
             try {
-                const response = await fetch(`${config.CHAT_WEBSOCKET_API}/get_chat_history?chatId=${chatId}`);
+                const response = await fetch(`${config.WEBSOCKET_SERVER}/get_chat_history?chatId=${chatId}`);
                 const data = await response.json();
                 setChatLog(data); // Update the chatLog with previous messages
             } catch (error) {
@@ -40,7 +40,7 @@ export default function ChatTest(): JSX.Element {
 
         fetchChatHistory();
 
-        const newSocket = io(`${config.CHAT_WEBSOCKET_API}/chat`, {
+        const newSocket = io(`${config.WEBSOCKET_SERVER}/chat`, {
             transports: ['websocket'],
         });
         setSocket(newSocket);

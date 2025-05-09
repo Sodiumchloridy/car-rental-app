@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Text, FlatList, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 let SQLite = require('react-native-sqlite-storage');
-import { getFirestore, collection, query, where, getDocs } from '@react-native-firebase/firestore';
 import { CarCard } from '@/components/UI';
 import { Car } from '../../types/Types';
 import { DrawerNavigationProp } from '@react-navigation/drawer'
@@ -9,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DrawerParamList } from '../../types/Types';
 import { useTheme } from 'react-native-paper';
-
+import { fetchCars } from '@/utils/FirebaseActions';
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
 
@@ -40,7 +39,8 @@ const carList = ({ category }: Props) => {
                     description TEXT,
                     fuel_type TEXT,
                     mileage REAL,
-                    owner_name TEXT NOT NULL
+                    owner_name TEXT NOT NULL,
+                    owner_uuid TEXT NOT NULL
                     )`
                 );
             })
@@ -50,43 +50,13 @@ const carList = ({ category }: Props) => {
         }
     }
 
-
-    // retrieve cars data from Firestore
-    const _fetchFromFirestore = async (): Promise<Car[]> => {
-        try {
-            const firestoreDB = getFirestore();
-            const carsRef = collection(firestoreDB, 'cars');
-            const sedanQuery = query(carsRef, where('category', '==', category));
-            const snapshot = await getDocs(sedanQuery);
-            const carData: Car[] = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    model: data.model as string,
-                    price: data.price as number,
-                    image: data.image as string | undefined,
-                    category: data.category as string,
-                    availability: data.availability,
-                    description: data.description as string | undefined,
-                    fuel_type: data.fuel_type as string | undefined,
-                    mileage: data.mileage as number | undefined,
-                    owner_name: (data.owner_name as string) || '',
-                };
-            });
-            return carData;
-        } catch (error) {
-            console.error('Firestore fetch error:', error);
-            throw error;
-        }
-    };
-
     // Sync Firestore data to SQLite
     const _syncToSQLite = (carData: Car[]) => {
         db.transaction((tx: any) => {
             carData.forEach((car: Car) => {
                 tx.executeSql(
-                    `INSERT OR REPLACE INTO cars (id, model, price, image, category, availability, description, fuel_type, mileage, owner_name)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT OR REPLACE INTO cars (id, model, price, image, category, availability, description, fuel_type, mileage, owner_name, owner_uuid)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         car.id,
                         car.model,
@@ -98,6 +68,7 @@ const carList = ({ category }: Props) => {
                         car.fuel_type,
                         car.mileage,
                         car.owner_name,
+                        car.owner_uuid,
                     ],
                     () => { },
                     (error: any) => console.error('Error syncing car to SQLite:', error)
@@ -133,7 +104,7 @@ const carList = ({ category }: Props) => {
     // Main fetch logic
     const _fetchCars = async () => {
         try {
-            const carData: Car[] = await _fetchFromFirestore();
+            const carData: Car[] = await fetchCars(category);
             setCars(carData);
             _syncToSQLite(carData);
         } catch (error) {
@@ -151,7 +122,7 @@ const carList = ({ category }: Props) => {
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.background }}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Ionicons name="menu-outline" size={28} color={theme.colors.text} />
+                    <Ionicons name="menu-outline" size={28} color={theme.colors.onBackground} />
                 </TouchableOpacity>
             </View>
             <FlatList

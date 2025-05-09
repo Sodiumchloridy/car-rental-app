@@ -11,6 +11,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import config from '@/config.json';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BookingHistory from '../../components/BookingHistory'; // Import BookingHistory
 
 const { height, width } = Dimensions.get('window');
 
@@ -89,6 +90,12 @@ const ProfileScreen = () => {
             );
           })}
         </View>
+
+        {/* Booking History Section */}
+        <Text style={styles.sectionTitle}>Booking History</Text>
+        <View style={styles.historyContainer}>
+          <BookingHistory />
+        </View>
       </ScrollView>
 
       <FloatingAction
@@ -146,12 +153,14 @@ const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 24,
+    paddingHorizontal: 24, // Keep horizontal padding
+    paddingVertical: 12, // Adjust vertical padding if needed
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
+    marginBottom: 24, // Add margin to separate from history
   },
   fieldContainer: {
     flexDirection: 'row',
@@ -176,7 +185,18 @@ const styles = StyleSheet.create({
     color: '#333333',
     fontWeight: '500',
   },
-  // Removed old styles like 'name', 'action', 'textContainer', 'label', 'value'
-  // as they are replaced by fieldContainer, fieldLabel, fieldValue etc.
-  // commandButton style is also not used.
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 16,
+    marginTop: 8, // Add some space above the title
+  },
+  historyContainer: {
+    // This container can hold the BookingHistory component
+    // It doesn't need a background color if BookingHistory cards are styled
+    // Or, if BookingHistory itself doesn't have a card-like container for its list,
+    // you might style this like profileCard.
+    // For now, let's assume BookingHistory's FlatList is self-contained with styled cards.
+  },
 });

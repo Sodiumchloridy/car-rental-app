@@ -108,7 +108,7 @@ const BookingScreen = ({ route, navigation }: any) => {
 
             const booking: Booking = {
                 car_id: car.id,
-                user_id: user ? user.id : '',
+                user_id: user ? user.uuid : '',
                 start_date: formatDateTime(startDate),
                 end_date: formatDateTime(endDate),
                 booking_date: formatDateTime(new Date()),
@@ -122,7 +122,7 @@ const BookingScreen = ({ route, navigation }: any) => {
                 }
             }
             if (await uploadBooking(booking)) {
-                const bookingDetail = await getLatestBooking(user ? user.id : '');
+                const bookingDetail = await getLatestBooking(user ? user.uuid : '');
                 if (bookingDetail) {
                     navigation.navigate('BookingConfirm', { bookingID: bookingDetail.booking_id, bookingData: bookingDetail.bookingData });
                 }
@@ -171,7 +171,7 @@ const BookingScreen = ({ route, navigation }: any) => {
     useEffect(() => {
         if (!user) {
             setUser({
-                id: 'user01',
+                uuid: 'user01',
                 name: 'Raymond',
                 email: 'asdkj@1gmail.com',
                 ic_number: '121202-02-2202',

@@ -21,7 +21,6 @@ import axios from 'axios'; // Import axios
 const { height, width } = Dimensions.get('window');
 
 const RegisterScreen = ({ navigation }: any) => {
-    const { setUser } = useUser();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -51,10 +50,20 @@ const RegisterScreen = ({ navigation }: any) => {
                 ic_number: icNumber,
                 phone_number: phoneNumber
             }, {
-                timeout: 10000 // 10 seconds timeout
+                timeout: 5000 // 10 seconds timeout
             });
 
-            if (response.status === 200 || response.status === 201) { // Check for successful status codes
+            // Check if the response is successful
+            if (response.status === 200 || response.status === 201) {
+                // Clear input fields
+                setName('');
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+                setIcNumber('');
+                setPhoneNumber('');
+
+                // Show success message
                 Alert.alert(
                     'Success',
                     'Registration successful! Please log in.',

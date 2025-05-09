@@ -68,6 +68,7 @@ const ListCarScreen = ({ navigation }: any) => {
         try {
             const carData = {
                 owner_name: user.name,
+                owner_uuid: user.uuid,
                 model,
                 description,
                 price: parsedPrice,
@@ -77,9 +78,6 @@ const ListCarScreen = ({ navigation }: any) => {
                 image,
                 availability: 1,
             };
-
-            // Log the data being sent
-            console.log('Attempting to list car with data:', JSON.stringify(carData, null, 2));
 
             const success = await addCarListing(carData);
 
