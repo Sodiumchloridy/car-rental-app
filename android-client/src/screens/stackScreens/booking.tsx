@@ -169,15 +169,6 @@ const BookingScreen = ({ route, navigation }: any) => {
 
     // for testing autofill purpose
     useEffect(() => {
-        if (!user) {
-            setUser({
-                uuid: 'user01',
-                name: 'Raymond',
-                email: 'asdkj@1gmail.com',
-                ic_number: '121202-02-2202',
-                phone_number: '013-2129903',
-            });
-        }
         if (car) {
             setTotalPrice(car.price);
         }
