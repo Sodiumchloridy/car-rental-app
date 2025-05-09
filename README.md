@@ -90,6 +90,17 @@ poetry run python server.py
 ```
 
 The authentication server will start on port 5000: http://localhost:5000
+### Setting Up the Chat WebSocket
+
+1. Navigate to the Chat WebSocket directory:
+```bash
+cd chat-ws
+```
+
+2. Run the websocket server:
+```bash
+python chatWebSocket.py
+```
 
 ## Integration
 
