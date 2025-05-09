@@ -40,7 +40,7 @@ const carList = ({ category }: Props) => {
                     fuel_type TEXT,
                     mileage REAL,
                     owner_name TEXT NOT NULL,
-                    owner_uuid TEXT NOT NULL
+                    owner_uuid TEXT NOT NULL,
                     )`
                 );
             })
@@ -54,6 +54,12 @@ const carList = ({ category }: Props) => {
     const _syncToSQLite = (carData: Car[]) => {
         db.transaction((tx: any) => {
             carData.forEach((car: Car) => {
+                if (!car.owner_uuid || !car.owner_name) {
+                    console.warn(`[syncToSQLite] Skipping car with missing owner info:`, car);
+                    return;
+                }
+
+                console.log(`[syncToSQLite] Inserting car ID: ${car.id}, owner_uuid: ${car.owner_uuid}`);
                 tx.executeSql(
                     `INSERT OR REPLACE INTO cars (
                     id, model, price, image, 
@@ -133,7 +139,7 @@ const carList = ({ category }: Props) => {
                         fuel_type TEXT,
                         mileage REAL,
                         owner_name TEXT NOT NULL,
-                        uuid TEXT NOT NULL
+                        owner_uuid TEXT NOT NULL
                     )`,
                         [],
                         () => {
