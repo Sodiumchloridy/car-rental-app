@@ -102,6 +102,7 @@ cd chat-ws
 python chatWebSocket.py
 ```
 
+The WebSocket server will start on port 5001: http://localhost:5001
 ## Integration
 
 To connect the React Native app with the authentication service, create a `config.json` file in your React Native project's `src` directory:
