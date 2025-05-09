@@ -109,9 +109,12 @@ To connect the React Native app with the authentication service, create a `confi
 
 ```json
 {
-  "FLASK_API": "http://10.0.2.2:5000"  // For Android emulator
+  "FLASK_API": "http://10.0.2.2:5000",  // For Android emulator
   // Use "http://localhost:5000" for iOS simulator
   // Use "http://YOUR_IP_ADDRESS:5000" for physical devices
+  "WEBSOCKET_SERVER": "http://10.0.2.2:5001" // For Android emulator
+  // Use "http://localhost:5001" for iOS simulator
+  // Use "http://YOUR_IP_ADDRESS:5001" for physical devices
 }
 ```
 
