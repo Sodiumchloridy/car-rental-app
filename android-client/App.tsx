@@ -7,7 +7,7 @@ import { LogBox } from 'react-native';
 import { CustomTabBar } from '@/components/UI';
 import { RootStackParamList } from './src/types/Types';
 import { UserProvider, useUser } from './src/context/UserContext';
-import { Provider as PaperProvider, DefaultTheme as PaperDefaultTheme, MD3DarkTheme as PaperDarkTheme, TouchableRipple, Text, Switch, useTheme } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme as PaperDefaultTheme, MD3DarkTheme as PaperDarkTheme, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import car list screens
@@ -157,9 +157,8 @@ const AppContent = () => {
             text: '#333333',
             primary: '#00b14f',
             secondary: '#f1f1f1',
-            card: '#ffffff',
+            surface: '#ffffff',
             border: '#e0e0e0',
-            notification: '#00b14f'
         }
     }
 
@@ -173,9 +172,8 @@ const AppContent = () => {
             text: '#ffffff',
             primary: '#00b14f',
             secondary: '#1f1f1f',
-            card: '#1f1f1f',
+            surface: '#1f1f1f',
             border: '#444444',
-            notification: '#00b14f'
         }
     }
 
