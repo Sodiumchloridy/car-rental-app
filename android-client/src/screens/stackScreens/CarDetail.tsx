@@ -1,13 +1,26 @@
 import React from 'react'
-import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback } from 'react-native';
+import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ReturnButton } from '@/components/UI';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useUser } from '@/context/UserContext';
 
 // use Dimensions to get the height of screen
 const { height } = Dimensions.get('window');
 
 const CarDetail = ({ route, navigation }: any) => {
     const { car } = route.params;
+    const { user, setUser } = useUser();
+
+    const generateChatId = (userId1: string, userId2: string): string => {
+        return [userId1, userId2].sort().join('_');
+    };
+
+    const chatHandling = () => {
+        if (user) {
+            generateChatId
+        }
+    }
     return (
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)' }}>
             {/* return button */}
@@ -47,9 +60,16 @@ const CarDetail = ({ route, navigation }: any) => {
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#000' }}>
                     {car.model}
                 </Text>
-                <Text style={{ marginTop: 5, fontSize: 14, color: 'rgba(0,0,0,0.5)', }}>
-                    Owner: {car.owner_name}
-                </Text>
+                <View style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', }}>
+                        Owner: {car.owner_name}
+                    </Text>
+                    <TouchableOpacity onPress={() => {
+                        console.log("chat button pressed")
+                    }} style={{ marginLeft: '5%' }}>
+                        <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
+                    </TouchableOpacity>
+                </View>
 
                 {/* vertical scrollable */}
                 <ScrollView

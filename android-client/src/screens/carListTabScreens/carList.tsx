@@ -55,8 +55,11 @@ const carList = ({ category }: Props) => {
         db.transaction((tx: any) => {
             carData.forEach((car: Car) => {
                 tx.executeSql(
-                    `INSERT OR REPLACE INTO cars (id, model, price, image, category, availability, description, fuel_type, mileage, owner_name, owner_uuid)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    `INSERT OR REPLACE INTO cars (
+                    id, model, price, image, 
+                    category, availability, description, 
+                    fuel_type, mileage, owner_name, owner_uuid) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         car.id,
                         car.model,
@@ -114,9 +117,43 @@ const carList = ({ category }: Props) => {
     };
 
     useEffect(() => {
-        _createCarsTable();
-        _fetchCars();
+        const init = async () => {
+            await new Promise<void>((resolve, reject) => {
+                db.transaction((tx: any) => {
+                    tx.executeSql('DROP TABLE IF EXISTS cars');
+                    tx.executeSql(
+                        `CREATE TABLE IF NOT EXISTS cars (
+                        id TEXT PRIMARY KEY,
+                        model TEXT NOT NULL,
+                        price REAL NOT NULL,
+                        image TEXT,
+                        category TEXT NOT NULL,
+                        availability INTEGER DEFAULT 1,
+                        description TEXT,
+                        fuel_type TEXT,
+                        mileage REAL,
+                        owner_name TEXT NOT NULL,
+                        uuid TEXT NOT NULL
+                    )`,
+                        [],
+                        () => {
+                            console.log('Cars table created');
+                            resolve();
+                        },
+                        (error: any) => {
+                            console.error('Error creating table:', error);
+                            reject(error);
+                        }
+                    );
+                });
+            });
+
+            _fetchCars(); // fetch after table creation
+        };
+
+        init();
     }, []);
+
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
