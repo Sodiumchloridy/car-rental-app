@@ -16,9 +16,11 @@ const CarDetail = ({ route, navigation }: any) => {
         return [userId1, userId2].sort().join('_');
     };
 
-    const chatHandling = () => {
+    // pass car.owner_uuid to create unique chatId and join user into a chatroom between owner
+    const chatHandling = (owner_id: string, owner_name: string) => {
         if (user) {
-            generateChatId
+            const chatId = generateChatId(user.uuid, owner_id);
+            navigation.navigate('Chatroom', { chatId: chatId, ownerId: owner_id, userId: user?.uuid, userName: owner_name })
         }
     }
     return (
@@ -64,9 +66,7 @@ const CarDetail = ({ route, navigation }: any) => {
                     <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', }}>
                         Owner: {car.owner_name}
                     </Text>
-                    <TouchableOpacity onPress={() => {
-                        console.log("chat button pressed")
-                    }} style={{ marginLeft: '5%' }}>
+                    <TouchableOpacity onPress={() => chatHandling(car.owner_uuid, car.owner_name)} style={{ marginLeft: '5%' }}>
                         <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
                     </TouchableOpacity>
                 </View>

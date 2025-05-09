@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import io, { Socket } from 'socket.io-client';
-import { useUser } from '@/context/UserContext';
 import axios from 'axios';
 import config from '@/config.json';
+import { useUser } from '@/context/UserContext';
 import { ReturnButton } from '@/components/UI';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -15,69 +14,101 @@ interface Chat {
     lastMessage: string;
     timestamp: number;
     unreadCount: number;
+    displayName: string;
 }
 
 const ChatList = ({ navigation }: any) => {
     const { user } = useUser();
-    const [chats, setChats] = useState([]);
+    const [chats, setChats] = useState<Chat[]>([]);
     const [loading, setLoading] = useState(true);
+    const socketRef = useRef<Socket | null>(null);
 
     useEffect(() => {
-        if (user?.uuid) {
-            axios
-                .get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`)
-                .then(async (res) => {
-                    const chats = res.data;
+        const fetchChats = async () => {
+            if (!user?.uuid) return;
+            
+            try {
+                const res = await axios.get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`);
+                const chats = res.data;
 
-                    // Extract unique user UUIDs to fetch names
-                    const userIds = new Set<string>();
-                    chats.forEach((chat: Chat) => {
-                        userIds.add(chat.userId);
-                        userIds.add(chat.ownerId);
-                    });
-
-                    // Remove current user ID — no need to fetch our own name
-                    userIds.delete(user.uuid);
-
-                    // Fetch all names in parallel
-                    const idToName: { [uuid: string]: string } = {};
-                    await Promise.all(
-                        Array.from(userIds).map(async (uuid) => {
-                            try {
-                                const resp = await axios.get(`${config.FLASK_API}/get_user_name?uuid=${uuid}`);
-                                idToName[uuid] = resp.data.name;
-                            } catch (e) {
-                                console.warn(`Failed to get name for ${uuid}`);
-                                idToName[uuid] = 'Unknown User';
-                            }
-                        })
-                    );
-
-                    // Attach displayName to each chat
-                    const enrichedChats = chats.map((chat: Chat) => {
-                        const otherUserId = chat.ownerId === user.uuid ? chat.userId : chat.ownerId;
-                        return {
-                            ...chat,
-                            displayName: idToName[otherUserId] || 'Unknown',
-                        };
-                    });
-
-                    setChats(enrichedChats);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setLoading(false);
+                const userIds = new Set<string>();
+                chats.forEach((chat: Chat) => {
+                    userIds.add(chat.userId);
+                    userIds.add(chat.ownerId);
                 });
-        }
+
+                userIds.delete(user.uuid);
+
+                const idToName: { [uuid: string]: string } = {};
+                await Promise.all(
+                    Array.from(userIds).map(async (uuid) => {
+                        try {
+                            const resp = await axios.get(`${config.FLASK_API}/get_user_name?uuid=${uuid}`);
+                            idToName[uuid] = resp.data.name;
+                        } catch (err) {
+                            console.warn(`[fetchChats] Failed to fetch name for ${uuid}:`, err);
+                            idToName[uuid] = 'Unknown User';
+                        }
+                    })
+                );
+
+                const enrichedChats = chats.map((chat: Chat) => {
+                    const otherUserId = chat.ownerId === user.uuid ? chat.userId : chat.ownerId;
+                    return {
+                        ...chat,
+                        displayName: idToName[otherUserId] || 'Unknown',
+                    };
+                });
+
+                setChats(enrichedChats);
+            } catch (err) {
+                console.error('[fetchChats] Error fetching chats:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Initial fetch
+        fetchChats();
+
+        // Set up periodic fetching
+        const interval = setInterval(fetchChats, 1000);
+
+        socketRef.current = io(`${config.WEBSOCKET_SERVER}/chat`, {
+            transports: ['websocket'],
+        });
+
+        socketRef.current.on('connect', () => {
+            console.log('[ChatList] Connected to chat socket');
+            socketRef.current?.emit('join_user_room', user?.uuid);
+        });
+
+        socketRef.current.on('disconnect', () => {
+            console.log('[Socket] Disconnected from chat socket');
+        });
+
+        // Cleanup interval and socket connection
+        return () => {
+            clearInterval(interval);
+            socketRef.current?.disconnect();
+        };
     }, [user?.uuid]);
+
     if (loading) {
         return <ActivityIndicator size="large" />;
     }
 
-    const renderItem = ({ item }: any) => (
+    const renderItem = ({ item }: { item: Chat }) => (
         <TouchableOpacity
-            onPress={() => navigation.navigate('Chatroom', { chatId: item.chatId, ownerId: item.ownerId, userId: user?.uuid, userName: item.displayName })}
+            onPress={() => {
+                console.log('[UI] Navigating to Chatroom with:', item);
+                navigation.navigate('Chatroom', {
+                    chatId: item.chatId,
+                    ownerId: item.ownerId,
+                    userId: user?.uuid,
+                    userName: item.displayName
+                });
+            }}
             style={{ padding: 16, borderBottomWidth: 1, borderColor: '#ddd' }}
         >
             <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 18 }}>
@@ -87,6 +118,7 @@ const ChatList = ({ navigation }: any) => {
             <Text style={{ fontSize: 12, color: 'gray' }}>{new Date(item.timestamp).toLocaleString()}</Text>
         </TouchableOpacity>
     );
+
     return (
         <View>
             <ReturnButton color='lightgrey' />

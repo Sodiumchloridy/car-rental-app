@@ -89,11 +89,6 @@ poetry install
 poetry run python server.py
 ```
 
-4. If using ip_address:
-```bash
-poetry run flask --app server run --host=0.0.0.0 --port=5000
-```
-
 The authentication server will start on port 5000: http://localhost:5000
 
 ## Integration
