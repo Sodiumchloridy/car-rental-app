@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Platform, Dimensions, StatusBar, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Platform, Dimensions, StatusBar, ScrollView, FlatList } from 'react-native';
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { DrawerParamList, User } from '../../types/Types';
+import { Car, DrawerParamList, User } from '../../types/Types';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { FloatingAction } from 'react-native-floating-action';
@@ -12,15 +12,18 @@ import config from '@/config.json';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BookingHistory from '../../components/BookingHistory'; // Import BookingHistory
+import { CarCard } from '@/components/CarCard';
+import { fetchUserCarListings } from '@/utils/FirebaseActions';
 
 const { height, width } = Dimensions.get('window');
 
 const ProfileScreen = () => {
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
   const [user, setUser] = useState<User | null>(null);
-  
+  const [userCarListings, setUserCarListings] = useState<Car[]>([]);
+
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const _fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
@@ -30,6 +33,8 @@ const ProfileScreen = () => {
             },
           });
           setUser(response.data.user);
+          const carListings = await fetchUserCarListings(response.data.user.uuid);
+          setUserCarListings(carListings);
         } else {
           console.log('No token found');
         }
@@ -38,24 +43,14 @@ const ProfileScreen = () => {
       }
     };
 
-    fetchUserProfile();
-  },[]);
+    _fetchData();
+  }, []);
 
   const fields = [
     { key: 'firstName', icon: 'user-o', label: 'Full Name', value: user?.name },
     { key: 'phone', icon: 'phone', label: 'Phone Number', iconType: Feather, value: user?.phone_number },
     { key: 'email', icon: 'envelope-o', label: 'Email Address', value: user?.email },
-    { key: 'icNumber', icon: 'id-card-o', label: 'IC Number', value: user?.ic_number}
-  ];
-
-  const actions = [
-    {
-      text: 'Edit Profile',
-      icon: require('../../assets/images/edit_icon.jpg'), // Ensure this path is correct
-      name: 'edit',
-      position: 1,
-      color: '#000000', // Changed to black for consistency
-    },
+    { key: 'icNumber', icon: 'id-card-o', label: 'IC Number', value: user?.ic_number }
   ];
 
   return (
@@ -67,6 +62,7 @@ const ProfileScreen = () => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
+      {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuButton}>
           <Ionicons name="menu-outline" size={32} color="#fff" />
@@ -91,25 +87,24 @@ const ProfileScreen = () => {
           })}
         </View>
 
+        {/* My Car Listings */}
+        <Text style={styles.sectionTitle}>My Car Listings</Text>
+        <FlatList
+          data={userCarListings}
+          renderItem={({ item }: { item: Car }) => (
+            <CarCard item={item} />
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+        />
+
         {/* Booking History Section */}
         <Text style={styles.sectionTitle}>Booking History</Text>
         <View style={styles.historyContainer}>
           <BookingHistory />
         </View>
       </ScrollView>
-
-      <FloatingAction
-        actions={actions}
-        color="#000000" // Main button color
-        onPressItem={name => {
-          if (name === 'edit') {
-            navigation.navigate('EditProfile');
-          }
-        }}
-        floatingIcon={<Ionicons name="pencil-outline" size={24} color="#fff" />}
-        iconHeight={24}
-        iconWidth={24}
-      />
     </View>
   );
 }

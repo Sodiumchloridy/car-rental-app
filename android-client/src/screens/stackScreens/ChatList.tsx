@@ -26,7 +26,7 @@ const ChatList = ({ navigation }: any) => {
     useEffect(() => {
         const fetchChats = async () => {
             if (!user?.uuid) return;
-            
+
             try {
                 const res = await axios.get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`);
                 const chats = res.data;
@@ -62,7 +62,7 @@ const ChatList = ({ navigation }: any) => {
 
                 setChats(enrichedChats);
             } catch (err) {
-                console.error('[fetchChats] Error fetching chats:', err);
+                console.log('[fetchChats] Failed to fetch chats:', (err as any)?.message || err);
             } finally {
                 setLoading(false);
             }
@@ -75,8 +75,9 @@ const ChatList = ({ navigation }: any) => {
         const interval = setInterval(fetchChats, 1000);
 
         socketRef.current = io(`${config.WEBSOCKET_SERVER}/chat`, {
-            transports: ['websocket'],
+            transports: ['websocket', 'polling'],
         });
+
 
         socketRef.current.on('connect', () => {
             console.log('[ChatList] Connected to chat socket');
@@ -96,6 +97,15 @@ const ChatList = ({ navigation }: any) => {
 
     if (loading) {
         return <ActivityIndicator size="large" />;
+    }
+    // copilot
+    if (chats.length === 0) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ReturnButton color='lightgrey' />
+                <Text style={{ fontSize: 18, color: 'black' }}>There is no any chat yet</Text>
+            </View>
+        );
     }
 
     const renderItem = ({ item }: { item: Chat }) => (

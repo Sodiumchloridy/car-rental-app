@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -26,18 +26,31 @@ const LoginScreen = ({ navigation }: any) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        setEmail('');
+        setPassword('');
+    }, []);
+
     const handleLogin = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Please enter both email and password.');
             return;
         }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('Error', 'Please enter a valid email address.');
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await axios.post(`${config.FLASK_API}/login`, {
                 email,
                 password,
             }, {
-                timeout: 5000 // 10 seconds timeout
+                timeout: 5000 // 5 seconds timeout
             });
 
             const data = await response.data;
@@ -50,13 +63,20 @@ const LoginScreen = ({ navigation }: any) => {
                     ic_number: data.user.ic,
                     phone_number: data.user.phone_no,
                 });
+
+                // Clear input fields
+                setEmail('');
+                setPassword('');
                 Alert.alert('Success', 'Login successful!');
                 navigation.navigate('Home');
-            } else {
-                Alert.alert('Login Failed', data.error || 'Invalid credentials');
             }
         } catch (error) {
-            Alert.alert('Error', 'Network error. Please try again.');
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                Alert.alert('Login Failed', 'Invalid credentials');
+            }
+            else {
+                Alert.alert('Error', 'Network error. Please try again.');
+            }
         } finally {
             setLoading(false);
         }

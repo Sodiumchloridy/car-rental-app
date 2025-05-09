@@ -24,8 +24,7 @@ def init_db():
             userId TEXT,
             ownerId TEXT,
             lastMessage TEXT,
-            timestamp TEXT,
-            unreadCount INTEGER
+            timestamp TEXT
         )
     ''')
     conn.execute('''
@@ -86,12 +85,11 @@ def send_message(data):
     print(f"🔁 Updating chats table — userId: {user_id}, ownerId: {owner_id}")
 
     conn.execute('''
-        INSERT INTO chats (chatId, userId, ownerId, lastMessage, timestamp, unreadCount)
-        VALUES (?, ?, ?, ?, ?, 1)
+        INSERT INTO chats (chatId, userId, ownerId, lastMessage, timestamp)
+        VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(chatId) DO UPDATE SET
             lastMessage=excluded.lastMessage,
-            timestamp=excluded.timestamp,
-            unreadCount=chats.unreadCount + 1
+            timestamp=excluded.timestamp
     ''', (chat_id, user_id, owner_id, message, timestamp))
     conn.commit()
     conn.close()
@@ -132,7 +130,7 @@ def get_user_chats():
     print(f"📋 get_user_chats for user_id: {user_id}")
     conn = get_db()
     cursor = conn.execute('''
-        SELECT c.chatId, c.userId, c.ownerId, c.lastMessage, c.timestamp, c.unreadCount
+        SELECT c.chatId, c.userId, c.ownerId, c.lastMessage, c.timestamp
         FROM user_chats uc
         JOIN chats c ON uc.chatId = c.chatId
         WHERE uc.userId = ?

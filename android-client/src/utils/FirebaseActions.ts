@@ -1,4 +1,4 @@
-import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs, doc, updateDoc } from '@react-native-firebase/firestore';
+import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs, doc, updateDoc, deleteDoc } from '@react-native-firebase/firestore';
 import { Booking, Car } from '../types/Types';
 import { formatDateTime, parseDateTime } from './TimeFormating';
 
@@ -211,3 +211,100 @@ export const fetchCars = async (category: String): Promise<Car[]> => {
         throw error;
     }
 };
+
+/**
+ * Fetches all car listings owned by a specific user from Firestore.
+ * 
+ * @param user_uuid - The unique identifier of the user whose car listings should be fetched
+ * @returns A promise that resolves to an array of Car objects owned by the specified user
+ * @throws Will not throw errors but will log them to the console and return an empty array
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const userCars = await fetchUserCarListings('user123');
+ *   console.log(`User has ${userCars.length} cars listed`);
+ * } catch (error) {
+ *   console.error('Failed to fetch cars', error);
+ * }
+ * ```
+ */
+export const fetchUserCarListings = async (user_uuid: string): Promise<Car[]> => {
+    try {
+        const firestoreDB = getFirestore();
+        const carsRef = collection(firestoreDB, 'cars');
+        const userCarsQuery = query(carsRef, where('owner_uuid', '==', user_uuid));
+        const snapshot = await getDocs(userCarsQuery);
+        const carData: Car[] = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                model: data.model as string,
+                price: data.price as number,
+                image: data.image as string | undefined,
+                category: data.category as string,
+                availability: data.availability,
+                description: data.description as string | undefined,
+                fuel_type: data.fuel_type as string | undefined,
+                mileage: data.mileage as number | undefined,
+                owner_name: data.owner_name as string,
+                owner_uuid: data.owner_uuid as string,
+            };
+        });
+        return carData;
+    } catch (error) {
+        console.error('Error fetching user car listings:', error);
+        return [];
+    }
+}
+
+
+/**
+ * Deletes a specific car listing from Firebase Firestore.
+ * 
+ * @param carId - The unique identifier of the car to be deleted
+ * @returns A Promise that resolves to a boolean value:
+ *   - `true` if the car was successfully deleted
+ *   - `false` if an error occurred during deletion
+ * 
+ * @example
+ * ```typescript
+ * const success = await deleteCarListing('car123');
+ * if (success) {
+ *   console.log('Car was removed from the database');
+ * } else {
+ *   console.log('Failed to delete the car');
+ * }
+ * ```
+ */
+export const deleteCarListing = async (carId: string) => {
+    try {
+        const carRef = doc(carsCollection, carId);
+        await deleteDoc(carRef);
+        console.log('Car listing deleted successfully');
+        return true;
+    } catch (error) {
+        console.error('Error deleting car listing:', error);
+        return false;
+    }
+}
+
+
+/**
+ * Updates a car listing document in Firebase Firestore.
+ * @param carId - The unique identifier of the car listing to update
+ * @param updatedData - Partial Car object containing only the fields that need to be updated
+ * @returns A Promise that resolves to true if update was successful, false otherwise
+ * @throws Will not throw errors as they are caught and returned as false
+ */
+export const updateCarListing = async (carId: string, updatedData: Partial<Car>) => {
+    try {
+        const carRef = doc(carsCollection, carId);
+        await updateDoc(carRef, updatedData);
+        console.log('Car listing updated successfully');
+        return true;
+    } catch (error) {
+        console.error('Error updating car listing:', error);
+        return false;
+    }
+}
