@@ -70,10 +70,12 @@ const CarDetail = ({ route, navigation }: any) => {
                     <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', }}>
                         Owner: {car.owner_name}
                     </Text>
-
+                    {user?.uuid !== car.owner_uuid && (
+    
                     <TouchableOpacity onPress={() => chatHandling(car.owner_uuid, car.owner_name)} style={{ marginLeft: '5%' }}>
-                        <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
-                    </TouchableOpacity>
+                            <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Update and Delete Buttons */}
@@ -200,6 +202,7 @@ const CarDetail = ({ route, navigation }: any) => {
                 < View style={{
                     width: '48%',
                 }}>
+                    {user?.uuid !== car.owner_uuid && (
                     <TouchableNativeFeedback
                         onPress={() => {
                             navigation.navigate('Booking', { car: car });
@@ -211,6 +214,7 @@ const CarDetail = ({ route, navigation }: any) => {
                             </Text>
                         </View>
                     </TouchableNativeFeedback>
+                    )}
                 </View >
             </View >
         </View >
