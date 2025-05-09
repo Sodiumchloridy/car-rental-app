@@ -9,6 +9,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { uploadBooking, getLatestBooking } from '../../utils/FirebaseActions';
 import { Booking } from '../../types/Types';
 import { formatDate, formatDateTime } from '../../utils/TimeFormating';
+import { useTheme } from 'react-native-paper';
 
 const paymentMethods = [
     { name: 'FPX', icon: require('../../assets/images/fpx.png') },
@@ -90,6 +91,7 @@ const BookingScreen = ({ route, navigation }: any) => {
     const [endDate, setEndDate] = useState(new Date());
     const [totalDays, setTotalDays] = useState('');
     const [totalPrice, setTotalPrice] = useState('0');
+    const theme = useTheme();
 
     const [renterName, setRenterName] = useState(user ? user.name : '');
     const [renterIC, setRenterIC] = useState(user ? user.ic_number : '');
@@ -179,9 +181,9 @@ const BookingScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={styles.screenContainer}>
-            <ReturnButton color='lightgrey' />
+            <ReturnButton color={theme.colors.onSurface} />
             <LinearGradient
-                colors={['rgba(0,0,0,0.8)', 'transparent']}
+                colors={[theme.dark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)', 'transparent']}
                 style={styles.gradientHeader}
                 locations={[0, 0.8]}
             />
@@ -190,12 +192,16 @@ const BookingScreen = ({ route, navigation }: any) => {
                 alwaysBounceVertical={false}
                 contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
                 keyboardShouldPersistTaps="handled"
-                style={styles.scrollView}
+                style={[styles.scrollView, { backgroundColor: theme.colors.background }]}
             >
-                <Text style={styles.sectionHeader}>
+                 <Text style={[styles.sectionHeader, { color: theme.colors.onSurface }]}>
                     Booking Details
                 </Text>
-                <View style={styles.detailsCard}>
+                <View style={[styles.detailsCard, { 
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.outline,
+                    borderWidth: 1
+                }]}>
                     <DisplayWithLabel
                         label={'Car Selected: '}
                         displayText={car.model}
@@ -222,10 +228,14 @@ const BookingScreen = ({ route, navigation }: any) => {
                         displayText={totalDays}
                     />
                 </View>
-                <Text style={styles.renterDetailsHeader}>
+                <Text style={[styles.renterDetailsHeader, { color: theme.colors.onSurface }]}>
                     Renter Details
                 </Text>
-                <View style={styles.renterDetailsCard}>
+                <View style={[styles.detailsCard, { 
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.outline,
+                    borderWidth: 1
+                }]}>
                     <InputWithLabel
                         label="Name: "
                         orientation="horizontal"
@@ -262,7 +272,7 @@ const BookingScreen = ({ route, navigation }: any) => {
                         color={isValidEmail(renterEmail) ? 'black' : 'red'}
                     />
                 </View>
-                <Text style={styles.renterDetailsHeader}>
+                <Text style={[styles.renterDetailsHeader, { color: theme.colors.onSurface }]}>
                     Payment method:
                 </Text>
                 <View style={[styles.renterDetailsCard, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20 }]}>
@@ -292,10 +302,14 @@ const BookingScreen = ({ route, navigation }: any) => {
                     ))}
                 </View>
             </ScrollView>
-            <View style={styles.footerContainer}>
+            <View style={[styles.footerContainer, { 
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.outline,
+                borderWidth: 1
+            }]}>
                 <View>
-                    <Text style={styles.totalPriceLabel}>Total Price:</Text>
-                    <Text style={styles.totalPriceValue}>RM {isNaN(parseFloat(totalPrice)) ? 'NaN' : parseFloat(totalPrice).toFixed(2)}</Text>
+                    <Text style={[styles.totalPriceLabel, { color: theme.colors.onSurface }]}>Total Price:</Text>
+                    <Text style={[styles.totalPriceValue, { color: theme.colors.onSurface }]}>RM {isNaN(parseFloat(totalPrice)) ? 'NaN' : parseFloat(totalPrice).toFixed(2)}</Text>
                 </View>
                 <TouchableNativeFeedback onPress={submitBooking}>
                     <View style={styles.confirmButton}>
@@ -329,14 +343,12 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#000',
         marginLeft: 10,
         marginTop: 60,
     },
     renterDetailsHeader: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#000',
         marginLeft: 10,
         marginTop: 20,
     },
@@ -346,9 +358,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginHorizontal: 10,
         padding: 10,
-        backgroundColor: 'white',
         borderRadius: 15,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,

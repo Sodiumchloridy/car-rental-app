@@ -71,6 +71,7 @@ export const ReturnButton = ({ color = 'white' }: { color?: string }) => {
 export const DisplayWithLabel = ({ label, displayText, size = 22, displaySize = 16 }: { label: string; displayText: string; size?: number; displaySize?: number }) => {
     const labelLineHeight = size * 1.2;
     const displayLineHeight = displaySize * 1.4;
+    const theme = useTheme();
 
     return (
         <View
@@ -86,7 +87,7 @@ export const DisplayWithLabel = ({ label, displayText, size = 22, displaySize = 
                 style={{
                     fontSize: size,
                     fontWeight: 'bold',
-                    color: '#000',
+                    color: theme.colors.onSurface,
                     marginRight: 10,
                     lineHeight: labelLineHeight,
                 }}
@@ -97,7 +98,7 @@ export const DisplayWithLabel = ({ label, displayText, size = 22, displaySize = 
             <Text
                 style={{
                     fontSize: displaySize,
-                    color: 'rgba(0,0,0,0.6)',
+                    color: theme.colors.onSurfaceVariant,
                     textAlign: 'right',
                     lineHeight: displayLineHeight,
                     flex: 1,
