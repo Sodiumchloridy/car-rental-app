@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Text, FlatList, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 let SQLite = require('react-native-sqlite-storage');
-import { CarCard } from '@/components/UI';
+import { CarCard } from '@/components/CarCard';
 import { Car } from '../../types/Types';
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useNavigation } from '@react-navigation/native';

@@ -1,7 +1,8 @@
 import React from 'react'
-import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback, Alert, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ReturnButton } from '@/components/UI';
+import { deleteCarListing } from '@/utils/FirebaseActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useUser } from '@/context/UserContext';
 
@@ -10,7 +11,8 @@ const { height } = Dimensions.get('window');
 
 const CarDetail = ({ route, navigation }: any) => {
     const { car } = route.params;
-    const { user, setUser } = useUser();
+    const { user } = useUser();
+    const isOwner = user?.uuid === car.owner_uuid;
 
     const generateChatId = (userId1: string, userId2: string): string => {
         return [userId1, userId2].sort().join('_');
@@ -23,6 +25,7 @@ const CarDetail = ({ route, navigation }: any) => {
             navigation.navigate('Chatroom', { chatId: chatId, ownerId: owner_id, userId: user?.uuid, userName: owner_name })
         }
     }
+
     return (
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)' }}>
             {/* return button */}
@@ -62,19 +65,68 @@ const CarDetail = ({ route, navigation }: any) => {
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#000' }}>
                     {car.model}
                 </Text>
+
                 <View style={{ marginTop: 5, flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', }}>
                         Owner: {car.owner_name}
                     </Text>
+
                     <TouchableOpacity onPress={() => chatHandling(car.owner_uuid, car.owner_name)} style={{ marginLeft: '5%' }}>
                         <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
                     </TouchableOpacity>
                 </View>
 
+                {/* Update and Delete Buttons */}
+                {isOwner && (
+                    <View style={{ flexDirection: 'row', marginTop: 20, paddingBottom: 20 }}>
+                        <TouchableNativeFeedback onPress={() => {
+                            navigation.navigate('UpdateCar', { car: car });
+                        }}>
+                            <View style={{
+                                backgroundColor: '#1877F2',
+                                marginRight: 10,
+                                paddingVertical: 10,
+                                paddingHorizontal: 20,
+                                borderRadius: 30,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                elevation: 5,
+                            }}>
+                                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+                                    Update
+                                </Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                        <TouchableNativeFeedback onPress={async () => {
+                            if (await deleteCarListing(car.id)) {
+                                Alert.alert('Success', 'Car listing deleted successfully');
+                                navigation.navigate('Home');
+                            } else {
+                                Alert.alert('Error', 'Failed to delete car listing');
+                            }
+                        }}>
+                            <View style={{
+                                backgroundColor: 'red',
+                                paddingVertical: 10,
+                                paddingHorizontal: 20,
+                                borderRadius: 30,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                elevation: 5,
+                            }}>
+                                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+                                    Delete
+                                </Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                    </View>
+                )}
+                
+
                 {/* vertical scrollable */}
                 <ScrollView
                     contentContainerStyle={{
-                        paddingBottom: height * 0.12
+                        paddingBottom: height * 0.2,
                     }}
                 >
                     {/* car description display */}
@@ -115,12 +167,12 @@ const CarDetail = ({ route, navigation }: any) => {
                         </View>
                     </ScrollView>
                 </ScrollView>
-            </View>
+            </View >
 
             {/* Booking price and button */}
-            <View style={styles.bookingButtonContainer}>
+            < View style={styles.bookingButtonContainer} >
                 {/* price */}
-                <View style={{
+                < View style={{
                     width: '40%',
                     marginLeft: 14,
                     marginRight: 8
@@ -143,9 +195,9 @@ const CarDetail = ({ route, navigation }: any) => {
                             / day
                         </Text>
                     </View>
-                </View>
+                </View >
                 {/* booking button */}
-                <View style={{
+                < View style={{
                     width: '48%',
                 }}>
                     <TouchableNativeFeedback
@@ -159,9 +211,9 @@ const CarDetail = ({ route, navigation }: any) => {
                             </Text>
                         </View>
                     </TouchableNativeFeedback>
-                </View>
-            </View>
-        </View>
+                </View >
+            </View >
+        </View >
     );
 }
 

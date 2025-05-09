@@ -36,8 +36,38 @@ const RegisterScreen = ({ navigation }: any) => {
             return;
         }
 
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('Error', 'Please enter a valid email address.');
+            return;
+        }
+        // Password validation
+        if (password.length < 6) {
+            Alert.alert('Error', 'Password must be at least 6 characters long.');
+            return;
+        } else if (password.length > 20) {
+            Alert.alert('Error', 'Password must be less than 20 characters long.');
+            return;
+        }
+
+        // IC Number validation
+        const icNumberRegex = /^[0-9]{12}$/; // Assuming IC number is 12 digits
+        if (!icNumberRegex.test(icNumber)) {
+            Alert.alert('Error', 'IC number must be 12 digits long.');
+            return;
+        }
+
+        // Phone Number validation
+        const phoneNumberRegex = /^[0-9]{10,15}$/;
+        if (!phoneNumberRegex.test(phoneNumber)) {
+            Alert.alert('Error', 'Phone number must be between 10 to 15 digits long.');
+            return;
+        }
+
+        // Confirm Password validation
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match.');
+            Alert.alert('Error', 'Password confirmation do not match.');
             return;
         }
 
@@ -74,14 +104,13 @@ const RegisterScreen = ({ navigation }: any) => {
                         }
                     ]
                 );
-            } else {
-                // This part might not be reached if axios throws an error for non-2xx responses
-                Alert.alert('Registration Failed', response.data.error || 'Failed to register');
             }
         } catch (error: any) { // Use 'any' for error type or a more specific axios error type
             if (axios.isAxiosError(error)) {
                 if (error.code === 'ECONNABORTED') {
                     Alert.alert('Error', 'Request timed out. Please try again.');
+                } else if (error.response?.status === 400) {
+                    Alert.alert('Registration Failed', error.response.data || 'Failed to register');
                 } else {
                     // Something happened in setting up the request that triggered an Error
                     Alert.alert('Error', 'An unexpected error occurred. Please try again.');

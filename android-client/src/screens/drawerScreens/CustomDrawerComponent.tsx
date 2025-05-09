@@ -86,8 +86,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   preferenceText: {
-    fontSize: 16,
+    fontSize: 18,
     marginLeft: 32,
+    color: '#fff',
+    fontFamily: 'Roboto-Medium',
+    marginBottom: 5,
   }
 });
 
