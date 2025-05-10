@@ -51,8 +51,8 @@ const CustomDrawerComponent = (props: any) => {
       </DrawerContentScrollView>
 
       {user && <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
-        <TouchableOpacity onPress={() => {
-          logout();
+        <TouchableOpacity onPress={async () => {
+          await logout();
           props.navigation.navigate('Home');
         }}
           style={{ paddingVertical: 15 }}

@@ -86,7 +86,7 @@ const { height } = Dimensions.get('window');
 
 const BookingScreen = ({ route, navigation }: any) => {
     const { car } = route.params;
-    const { user, setUser } = useUser();
+    const { user } = useUser();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [totalDays, setTotalDays] = useState('');

@@ -56,7 +56,7 @@ const LoginScreen = ({ navigation }: any) => {
             const data = await response.data;
             if (response.status === 200) {
                 await AsyncStorage.setItem('userToken', data.token);
-                setUser({
+                await setUser({
                     uuid: data.user.uuid,
                     name: data.user.name,
                     email: data.user.email,
