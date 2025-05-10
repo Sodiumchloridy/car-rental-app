@@ -19,17 +19,37 @@ export const formatDateTime = (date: Date): string => {
 }
 
 export const parseDateTime = (dateString: string): Date | null => {
-    const [date, time] = dateString.split(' ');
-
-    if (!date || !time) return null;
-
-    const [day, month, year] = date.split('-').map(Number);
-    const [hours, minutes] = time.split(':').map(Number);
-
-    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+    console.log('Parsing date string:', dateString);
+    
+    if (!dateString) {
+        console.log('Date string is empty or undefined');
         return null;
     }
 
-    // Month is 0-indexed in JavaScript
-    return new Date(year, month - 1, day, hours, minutes);
+    const [date, time] = dateString.split(' ');
+    console.log('Split result:', { date, time });
+
+    if (!date || !time) {
+        console.log('Invalid date-time format: missing date or time part');
+        return null;
+    }
+
+    const [day, month, year] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    console.log('Parsed components:', {
+        day, month, year,
+        hours, minutes
+    });
+
+    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+        console.log('Invalid number in date components');
+        return null;
+    }
+
+    // Create date in local timezone
+    const parsedDate = new Date(year, month - 1, day, hours, minutes);
+    console.log('Local date:', parsedDate);
+    
+    return parsedDate;
 };

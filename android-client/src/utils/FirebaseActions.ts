@@ -95,6 +95,34 @@ export const getCar = async (carID: string) => {
 }
 
 /**
+ * Resets a car's availability after its booking period has ended
+ * @param carID - The unique identifier of the car
+ * @returns Promise<boolean> - True if reset was successful, false otherwise
+ */
+export const resetCarAvailability = async (carID: string): Promise<boolean> => {
+    try {
+        const carSelected = doc(carsCollection, carID);
+        const carData = await getDoc(carSelected);
+
+        if (carData.exists) {
+            await updateDoc(carSelected, {
+                availability: 'yes',
+                unavailable_from: null,
+                unavailable_until: null,
+            });
+            console.log(`Car availability reset: ${carID}`);
+            return true;
+        } else {
+            console.log(`Car id: ${carID} not found`);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error resetting car availability:', error);
+        return false;
+    }
+}
+
+/**
  * Function to add a car listing to Firestore
  * @param {CarListing} car - The car listing object to be added
  * @returns {Promise<boolean>} - Returns true if the car listing was added successfully, false otherwise
@@ -203,8 +231,18 @@ export const fetchCars = async (category: String): Promise<Car[]> => {
                 mileage: data.mileage as number | undefined,
                 owner_name: data.owner_name as string,
                 owner_uuid: data.owner_uuid as string,
+                unavailable_from: data.unavailable_from as string | undefined,  // Add this
+                unavailable_until: data.unavailable_until as string | undefined // Add this
             };
         });
+        
+        console.log('Fetched cars with dates:', carData.map(car => ({
+            id: car.id,
+            availability: car.availability,
+            from: car.unavailable_from,
+            until: car.unavailable_until
+        })));
+        
         return carData;
     } catch (error) {
         console.error('Firestore fetch error:', error);

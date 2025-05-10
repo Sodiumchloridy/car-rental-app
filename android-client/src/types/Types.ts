@@ -4,12 +4,14 @@ export interface Car {
     price: number;
     image?: string;
     category: string;
-    availability: boolean;
+    availability: string;
     description?: string;
     fuel_type?: string;
     mileage?: number;
     owner_name: string;
     owner_uuid: string;
+    unavailable_from?: string;
+    unavailable_until?: string;
 }
 
 export interface User {

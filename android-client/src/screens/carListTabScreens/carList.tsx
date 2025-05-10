@@ -8,7 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DrawerParamList } from '../../types/Types';
 import { useTheme } from 'react-native-paper';
-import { fetchCars } from '@/utils/FirebaseActions';
+import { fetchCars, resetCarAvailability } from '@/utils/FirebaseActions';
+import { parseDateTime } from '@/utils/TimeFormating';
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
 
@@ -36,20 +37,23 @@ const carList = ({ category }: Props) => {
                     `INSERT OR REPLACE INTO cars (
                     id, model, price, image, 
                     category, availability, description, 
-                    fuel_type, mileage, owner_name, owner_uuid) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    fuel_type, mileage, owner_name, owner_uuid,
+                    unavailable_from, unavailable_until) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         car.id,
                         car.model,
                         car.price,
                         car.image,
                         car.category,
-                        car.availability ? 1 : 0,
+                        car.availability,  // Now passing 'yes' or 'booked' directly
                         car.description,
                         car.fuel_type,
                         car.mileage,
                         car.owner_name,
                         car.owner_uuid,
+                        car.unavailable_from || null,
+                        car.unavailable_until || null,
                     ],
                     () => { },
                     (error: any) => console.error('Error syncing car to SQLite:', error)
@@ -63,7 +67,25 @@ const carList = ({ category }: Props) => {
         return new Promise((resolve, reject) => {
             db.transaction((tx: any) => {
                 tx.executeSql(
-                    'SELECT * FROM cars WHERE category = ?',
+                    `SELECT * FROM cars 
+                     WHERE category = ? 
+                     AND availability = 'yes'
+                     AND (
+                         (unavailable_from IS NULL AND unavailable_until IS NULL)
+                         OR 
+                         (
+                             datetime('now') NOT BETWEEN 
+                             datetime(substr(unavailable_from,7,4) || '-' || 
+                                    substr(unavailable_from,4,2) || '-' || 
+                                    substr(unavailable_from,1,2) || ' ' || 
+                                    substr(unavailable_from,12))
+                             AND
+                             datetime(substr(unavailable_until,7,4) || '-' || 
+                                    substr(unavailable_until,4,2) || '-' || 
+                                    substr(unavailable_until,1,2) || ' ' || 
+                                    substr(unavailable_until,12))
+                         )
+                     )`,
                     [category],
                     (tx: any, results: any) => {
                         const rows = results.rows;
@@ -73,10 +95,7 @@ const carList = ({ category }: Props) => {
                         }
                         resolve(offlineCars);
                     },
-                    (error: any) => {
-                        console.error('SQLite fetch error:', error);
-                        reject(error);
-                    }
+                    (error: any) => reject(error)
                 );
             });
         });
@@ -86,18 +105,97 @@ const carList = ({ category }: Props) => {
     const _fetchCars = async () => {
         try {
             const carData: Car[] = await fetchCars(category);
-            setCars(carData);
+            const now = new Date();
+            
+            // Check and reset availability for cars with expired booking periods
+            for (const car of carData) {
+                if (car.unavailable_from && car.unavailable_until) {
+                    const endDate = parseDateTime(car.unavailable_until);
+                    
+                    if (endDate && now.getTime() > endDate.getTime()) {
+                        console.log(`Resetting availability for car ${car.id} - booking period ended`);
+                        await resetCarAvailability(car.id);
+                    }
+                }
+            }
+
+            const availableCars = carData.filter(car => {
+                console.log('\nChecking car:', car.id);
+                console.log('Availability:', car.availability);
+                console.log('Booking dates:', {
+                    from: car.unavailable_from,
+                    until: car.unavailable_until
+                });
+
+                // Only proceed if availability is 'yes'
+                if (car.availability !== 'yes') {
+                    console.log('Car filtered out - not available');
+                    return false;
+                }
+
+                // If booking dates exist, check if we're within booking period
+                if (car.unavailable_from && car.unavailable_until) {
+                    const startDate = parseDateTime(car.unavailable_from);
+                    const endDate = parseDateTime(car.unavailable_until);
+                    
+                    if (!startDate || !endDate) {
+                        console.log('Car filtered out - invalid dates');
+                        return false;
+                    }
+
+                    // Compare using local time
+                    const isWithinBooking = 
+                        now.getTime() >= startDate.getTime() && 
+                        now.getTime() <= endDate.getTime();
+                    
+                    console.log('Date comparison:', {
+                        nowLocal: now.toLocaleString(),
+                        startLocal: startDate.toLocaleString(),
+                        endLocal: endDate.toLocaleString(),
+                        isWithinBooking
+                    });
+
+                    return !isWithinBooking;
+                }
+
+                console.log('Car included - no booking dates');
+                return true;
+            });
+            
+            console.log(`Filtered ${carData.length} cars down to ${availableCars.length} available cars`);
+            setCars(availableCars);
             _syncToSQLite(carData);
         } catch (error) {
+            console.error('Error fetching cars:', error);
             const offlineCars: Car[] = await _fetchFromSQLite();
             setCars(offlineCars);
+        }
+    };
+
+    const checkCarAvailability = async () => {
+        try {
+            const carData: Car[] = await fetchCars(category);
+            const now = new Date();
+
+            for (const car of carData) {
+                if (car.unavailable_from && car.unavailable_until) {
+                    const endDate = parseDateTime(car.unavailable_until);
+                    
+                    if (endDate && now.getTime() > endDate.getTime()) {
+                        await resetCarAvailability(car.id);
+                    }
+                }
+            }
+            
+            _fetchCars();
+        } catch (error) {
+            console.error('Error checking car availability:', error);
         }
     };
 
     useEffect(() => {
         const init = async () => {
             await new Promise<void>((resolve, reject) => {
-                // initialize the cars table
                 db.transaction((tx: any) => {
                     tx.executeSql('DROP TABLE IF EXISTS cars');
                     tx.executeSql(
@@ -107,12 +205,14 @@ const carList = ({ category }: Props) => {
                         price REAL NOT NULL,
                         image TEXT,
                         category TEXT NOT NULL,
-                        availability INTEGER DEFAULT 1,
+                        availability TEXT DEFAULT 'yes',
                         description TEXT,
                         fuel_type TEXT,
                         mileage REAL,
                         owner_name TEXT NOT NULL,
-                        owner_uuid TEXT NOT NULL
+                        owner_uuid TEXT NOT NULL,
+                        unavailable_from TEXT,
+                        unavailable_until TEXT
                     )`,
                         [],
                         () => {
@@ -127,12 +227,29 @@ const carList = ({ category }: Props) => {
                 });
             });
 
-            _fetchCars(); // fetch after table creation
+            _fetchCars(); 
         };
 
         init();
     }, []);
 
+    useEffect(() => {
+        // Check availability every minute
+        const availabilityInterval = setInterval(checkCarAvailability, 60000);
+        
+        // Initial check
+        checkCarAvailability();
+
+        return () => clearInterval(availabilityInterval);
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            _fetchCars();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
