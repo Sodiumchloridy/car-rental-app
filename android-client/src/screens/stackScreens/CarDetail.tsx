@@ -71,8 +71,8 @@ const CarDetail = ({ route, navigation }: any) => {
                         Owner: {car.owner_name}
                     </Text>
                     {user?.uuid !== car.owner_uuid && (
-    
-                    <TouchableOpacity onPress={() => chatHandling(car.owner_uuid, car.owner_name)} style={{ marginLeft: '5%' }}>
+
+                        <TouchableOpacity onPress={() => chatHandling(car.owner_uuid, car.owner_name)} style={{ marginLeft: '5%' }}>
                             <Ionicons name="chatbubble-ellipses" size={28} color={'#00b14f'} />
                         </TouchableOpacity>
                     )}
@@ -123,7 +123,7 @@ const CarDetail = ({ route, navigation }: any) => {
                         </TouchableNativeFeedback>
                     </View>
                 )}
-                
+
 
                 {/* vertical scrollable */}
                 <ScrollView
@@ -202,18 +202,18 @@ const CarDetail = ({ route, navigation }: any) => {
                 < View style={{
                     width: '48%',
                 }}>
-                    {user?.uuid !== car.owner_uuid && (
-                    <TouchableNativeFeedback
-                        onPress={() => {
-                            navigation.navigate('Booking', { car: car });
-                        }}
-                    >
-                        <View style={styles.bookNowButton}>
-                            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
-                                Book Now
-                            </Text>
-                        </View>
-                    </TouchableNativeFeedback>
+                    {(user?.uuid !== car.owner_uuid && car.availability === 'yes') && (
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                navigation.navigate('Booking', { car: car });
+                            }}
+                        >
+                            <View style={styles.bookNowButton}>
+                                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+                                    Book Now
+                                </Text>
+                            </View>
+                        </TouchableNativeFeedback>
                     )}
                 </View >
             </View >
