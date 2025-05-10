@@ -3,9 +3,9 @@ import config from '@/config.json';
 import { fetchUserCarListings } from '@/utils/FirebaseActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native'; // Import useFocusEffect
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react'; // Import useCallback
 import { Dimensions, FlatList, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
@@ -21,29 +21,50 @@ const ProfileScreen = () => {
   const [user, setUser] = useState<User | null>(null);
   const [userCarListings, setUserCarListings] = useState<Car[]>([]);
 
-  useEffect(() => {
-    const _fetchData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (token) {
-          const response = await axios.get(`${config.FLASK_API}/profile`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          setUser(response.data.user);
+  // Define _fetchData using useCallback to stabilize its reference
+  const _fetchData = useCallback(async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        const response = await axios.get(`${config.FLASK_API}/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setUser(response.data.user);
+        // Ensure response.data.user.uuid exists before calling fetchUserCarListings
+        if (response.data.user && response.data.user.uuid) {
           const carListings = await fetchUserCarListings(response.data.user.uuid);
           setUserCarListings(carListings);
         } else {
-          console.log('No token found');
+          setUserCarListings([]); // Clear or handle missing uuid case
         }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
+      } else {
+        console.log('No token found');
+        // Optionally clear user data if no token is found
+        setUser(null);
+        setUserCarListings([]);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      // Optionally clear user data on error
+      setUser(null);
+      setUserCarListings([]);
+    }
+  }, []); // Empty dependency array for useCallback as _fetchData doesn't depend on props/state from ProfileScreen scope
 
-    _fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      _fetchData();
+
+      // Optional: Return a cleanup function if _fetchData sets up anything that needs to be cleaned up
+      // when the screen goes out of focus (e.g., subscriptions, event listeners).
+      // For a simple fetch, this might not be necessary.
+      // return () => {
+      //   console.log('Profile screen is unfocused. Cleanup if needed.');
+      // };
+    }, [_fetchData]) // _fetchData is now a stable dependency
+  );
 
   const fields = [
     { key: 'firstName', icon: 'user-o', label: 'Full Name', value: user?.name },
