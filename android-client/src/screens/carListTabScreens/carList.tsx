@@ -22,34 +22,6 @@ const carList = ({ category }: Props) => {
     const [cars, setCars] = useState<Car[]>([]);
     const theme = useTheme();
 
-    // initialize the cars table
-    const _createCarsTable = () => {
-        try {
-            db.transaction((tx: any) => {
-                tx.executeSql('DROP TABLE IF EXISTS cars');
-
-                tx.executeSql(
-                    `CREATE TABLE IF NOT EXISTS cars (
-                    id TEXT PRIMARY KEY,
-                    model TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    image TEXT,
-                    category TEXT NOT NULL,
-                    availability INTEGER DEFAULT 1,
-                    description TEXT,
-                    fuel_type TEXT,
-                    mileage REAL,
-                    owner_name TEXT NOT NULL,
-                    owner_uuid TEXT NOT NULL,
-                    )`
-                );
-            })
-        } catch (error) {
-            console.error(error);
-            throw Error('Failed to create cars Table');
-        }
-    }
-
     // Sync Firestore data to SQLite
     const _syncToSQLite = (carData: Car[]) => {
         db.transaction((tx: any) => {
@@ -125,6 +97,7 @@ const carList = ({ category }: Props) => {
     useEffect(() => {
         const init = async () => {
             await new Promise<void>((resolve, reject) => {
+                // initialize the cars table
                 db.transaction((tx: any) => {
                     tx.executeSql('DROP TABLE IF EXISTS cars');
                     tx.executeSql(
