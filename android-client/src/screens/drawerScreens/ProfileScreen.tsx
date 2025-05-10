@@ -43,7 +43,7 @@ const ProfileScreen = () => {
     };
 
     _fetchData();
-  }, []);
+  });
 
   const fields = [
     { key: 'firstName', icon: 'user-o', label: 'Full Name', value: user?.name },
