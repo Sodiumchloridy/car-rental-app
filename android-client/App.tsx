@@ -1,37 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import { NavigationContainer, DefaultTheme as NavLight, DarkTheme as NavDark } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { LogBox } from 'react-native';
 import { CustomTabBar } from '@/components/UI';
-import { RootStackParamList } from './src/types/Types';
-import { UserProvider, useUser } from './src/context/UserContext';
-import { Provider as PaperProvider, DefaultTheme as PaperDefaultTheme, MD3DarkTheme as PaperDarkTheme, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DarkTheme as NavDark, NavigationContainer, DefaultTheme as NavLight } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { LogBox } from 'react-native';
+import { MD3DarkTheme as PaperDarkTheme, DefaultTheme as PaperDefaultTheme, Provider as PaperProvider, useTheme } from 'react-native-paper';
+import { UserProvider, useUser } from './src/context/UserContext';
+import { RootStackParamList } from './src/types/Types';
 
 // Import car list screens
+import luxuryList from './src/screens/carListTabScreens/luxuryList';
 import sedanList from './src/screens/carListTabScreens/sedanList';
 import suvList from './src/screens/carListTabScreens/suvList';
-import luxuryList from './src/screens/carListTabScreens/luxuryList';
 
 // Import stack screens
-import HomeScreen from './src/screens/stackScreens/HomeScreen';
-import carDetail from './src/screens/stackScreens/CarDetail';
+import Chatroom from '@/screens/stackScreens/Chatroom';
 import Booking from './src/screens/stackScreens/Booking';
 import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
-import Chatroom from '@/screens/stackScreens/Chatroom';
+import carDetail from './src/screens/stackScreens/CarDetail';
+import HomeScreen from './src/screens/stackScreens/HomeScreen';
 
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import Profile from './src/screens/drawerScreens/ProfileScreen';
-import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
 import ChatList from '@/screens/stackScreens/ChatList';
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import CustomDrawerComponent from './src/screens/drawerScreens/CustomDrawerComponent';
+import Profile from './src/screens/drawerScreens/ProfileScreen';
 
 
-import Ionicons from "react-native-vector-icons/Ionicons";
 import LoginScreen from '@/screens/stackScreens/LoginScreen';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-import RegisterScreen from '@/screens/stackScreens/RegisterScreen';
 import ListCarScreen from '@/screens/stackScreens/CarListingScreen';
+import RegisterScreen from '@/screens/stackScreens/RegisterScreen';
 
 import UpdateCarListing from '@/screens/stackScreens/UpdateCarListing';
 
