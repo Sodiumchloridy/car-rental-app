@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavigationContainer, DefaultTheme as NavLight, DarkTheme as NavDark } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -116,7 +116,7 @@ const App = () => {
 // Create a separate component for the app content that uses the context
 const AppContent = () => {
     const { user } = useUser();
-    const [isDarkTheme, setIsDarkTheme] = React.useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
 
     useEffect(() => {
         const loadTheme = async () => {
