@@ -76,7 +76,7 @@ const ListCarScreen = ({ navigation }: any) => {
                 fuel_type: fuelType,
                 mileage: parsedMileage,
                 image,
-                availability: 1,
+                availability: "yes",
             };
 
             const success = await addCarListing(carData);

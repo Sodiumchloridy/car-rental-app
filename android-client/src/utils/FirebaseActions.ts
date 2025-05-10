@@ -133,7 +133,7 @@ interface CarListing {
     price: number;
     image?: string;
     category: string;
-    availability: number;
+    availability: string;
     description?: string;
     fuel_type?: string;
     mileage?: number;
