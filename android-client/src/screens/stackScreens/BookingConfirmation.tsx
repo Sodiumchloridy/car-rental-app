@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, TouchableNativeFeedback, Button, TouchableOpacity, ScrollView, StyleSheet, BackHandler } from 'react-native';
+import { Text, View, TouchableNativeFeedback, ScrollView, BackHandler } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DisplayWithLabel } from '@/components/UI';
 import { getCar } from '../../utils/FirebaseActions';
 import { Car } from '../../types/Types';
-
+import { styles } from '@/styles/BookingConfirmation.styles';
 
 const BookingConfirmPage = ({ route, navigation }: any) => {
     const { bookingID, bookingData } = route.params;
@@ -111,7 +111,7 @@ const BookingConfirmPage = ({ route, navigation }: any) => {
             </View>
             {/* home button and booking history button */}
             <View style={{ marginTop: 25, alignItems: 'center', marginBottom: 50 }}>
-                <TouchableNativeFeedback onPress={() => console.log('booking history button pressed')}>
+                <TouchableNativeFeedback onPress={() => navigation.navigate('Profile')}>
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>
                             Booking History
@@ -131,39 +131,3 @@ const BookingConfirmPage = ({ route, navigation }: any) => {
 }
 
 export default BookingConfirmPage;
-
-const styles = StyleSheet.create({
-    scrollView: {
-        flex: 1,
-        // backgroundColor: 'white'
-        paddingTop: 40,
-    },
-    detailsCard: {
-        marginTop: 20,
-        marginHorizontal: 10,
-        padding: 10,
-        paddingVertical: 15,
-        backgroundColor: 'white',
-        borderRadius: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 5,
-    },
-    button: {
-        width: '65%',
-        padding: 10,
-        backgroundColor: 'black',
-        borderRadius: 20,
-        elevation: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 15,
-    },
-    buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16
-    },
-})

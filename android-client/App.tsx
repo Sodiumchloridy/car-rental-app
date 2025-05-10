@@ -17,7 +17,7 @@ import luxuryList from './src/screens/carListTabScreens/luxuryList';
 // Import stack screens
 import HomeScreen from './src/screens/stackScreens/HomeScreen';
 import carDetail from './src/screens/stackScreens/CarDetail';
-import Booking from './src/screens/stackScreens/booking';
+import Booking from './src/screens/stackScreens/Booking';
 import BookingConfirm from './src/screens/stackScreens/BookingConfirmation';
 import Chatroom from '@/screens/stackScreens/Chatroom';
 

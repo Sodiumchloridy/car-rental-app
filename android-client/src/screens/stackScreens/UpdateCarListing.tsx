@@ -141,12 +141,9 @@ export default function UpdateCarListing({ route, navigation }: any) {
                                     onValueChange={(itemValue) => setCategory(itemValue)}
                                     style={styles.picker}
                                 >
-                                    <Picker.Item label="Sedan" value="sedan" />
-                                    <Picker.Item label="SUV" value="suv" />
-                                    <Picker.Item label="Hatchback" value="hatchback" />
-                                    <Picker.Item label="MPV" value="mpv" />
-                                    <Picker.Item label="Pickup Truck" value="pickup" />
-                                    <Picker.Item label="Sports Car" value="sports" />
+                                    <Picker.Item label="Sedan" value="Sedan" />
+                                    <Picker.Item label="SUV" value="SUV" />
+                                    <Picker.Item label="Luxury" value="Luxury" />
                                 </Picker>
                             </View>
                         </View>
