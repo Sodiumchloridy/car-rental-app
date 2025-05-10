@@ -172,6 +172,13 @@ const AppContent = () => {
 
     const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme;
 
+    const handleHomePress = (navigation: any) => {
+        navigation.navigate('Home Screen', {
+            screen: 'Home'
+        });
+        navigation.closeDrawer();
+    };
+
     return (
         <PaperProvider theme={theme}>
             <NavigationContainer theme={theme}>
@@ -196,6 +203,12 @@ const AppContent = () => {
                             ),
                             drawerLabelStyle: { fontSize: 20 },
                         }}
+                        listeners={({ navigation }) => ({
+                            drawerItemPress: (e) => {
+                                e.preventDefault();
+                                handleHomePress(navigation);
+                            }
+                        })}
                     />
 
 
