@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Text, FlatList, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-let SQLite = require('react-native-sqlite-storage');
 import { CarCard } from '@/components/CarCard';
-import { Car } from '../../types/Types';
-import { DrawerNavigationProp } from '@react-navigation/drawer'
-import { useNavigation } from '@react-navigation/native';
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { DrawerParamList } from '../../types/Types';
-import { useTheme } from 'react-native-paper';
 import { fetchCars, resetCarAvailability } from '@/utils/FirebaseActions';
 import { parseDateTime } from '@/utils/TimeFormating';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Car, DrawerParamList } from '../../types/Types';
+let SQLite = require('react-native-sqlite-storage');
 
 const db = SQLite.openDatabase({ name: 'carRental.db', location: 'default' });
 

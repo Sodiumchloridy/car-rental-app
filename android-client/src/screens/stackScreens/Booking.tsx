@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { Text, View, TouchableNativeFeedback, StyleSheet, TouchableOpacity, Platform, ScrollView, Dimensions, Alert, Image } from 'react-native';
 import { DisplayWithLabel, InputWithLabel, ReturnButton } from '@/components/UI';
-import { useUser } from '../../context/UserContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Platform, ScrollView, StyleSheet, Text, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Feather from 'react-native-vector-icons/Feather';
-import { uploadBooking, getLatestBooking } from '../../utils/FirebaseActions';
-import { Booking } from '../../types/Types';
-import { formatDate, formatDateTime } from '../../utils/TimeFormating';
 import { useTheme } from 'react-native-paper';
+import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useUser } from '../../context/UserContext';
+import { Booking } from '../../types/Types';
+import { getLatestBooking, uploadBooking } from '../../utils/FirebaseActions';
+import { formatDate, formatDateTime } from '../../utils/TimeFormating';
 
 const paymentMethods = [
     { name: 'FPX', icon: require('../../assets/images/fpx.png') },
@@ -86,7 +86,7 @@ const { height } = Dimensions.get('window');
 
 const BookingScreen = ({ route, navigation }: any) => {
     const { car } = route.params;
-    const { user, setUser } = useUser();
+    const { user } = useUser();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [totalDays, setTotalDays] = useState('');

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Text, View, TouchableNativeFeedback, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { Car, RootStackParamList } from '@/types/Types';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@/types/Types';
 import { useNavigation } from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React from 'react';
+import { Text, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export const CustomTabBar = ({ state, descriptors, navigation }: any) => {
     const theme = useTheme();

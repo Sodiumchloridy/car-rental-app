@@ -1,4 +1,4 @@
-import { getFirestore, collection, addDoc, query, where, orderBy, limit, getDoc, getDocs, doc, updateDoc, deleteDoc } from '@react-native-firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, updateDoc, where } from '@react-native-firebase/firestore';
 import { Booking, Car } from '../types/Types';
 import { formatDateTime, parseDateTime } from './TimeFormating';
 

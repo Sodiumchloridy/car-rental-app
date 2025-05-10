@@ -1,9 +1,9 @@
+import { ReturnButton } from '@/components/UI';
+import config from '@/config.json';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import io, { Socket } from 'socket.io-client';
-import config from '@/config.json';
-import { ReturnButton } from '@/components/UI';
 
 interface ChatMessage {
     chatId: string;
