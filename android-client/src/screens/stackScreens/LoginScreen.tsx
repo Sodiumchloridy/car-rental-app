@@ -1,22 +1,22 @@
+import config from '@/config.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Alert,
     ActivityIndicator,
+    Alert,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
-    StatusBar
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUser } from '../../context/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
-import config from '@/config.json';
-import axios from 'axios';
+import { useUser } from '../../context/UserContext';
 
 const { height, width } = Dimensions.get('window');
 

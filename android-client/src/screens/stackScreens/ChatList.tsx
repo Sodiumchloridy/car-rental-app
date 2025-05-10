@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import io, { Socket } from 'socket.io-client';
-import axios from 'axios';
+import { ReturnButton } from '@/components/UI';
 import config from '@/config.json';
 import { useUser } from '@/context/UserContext';
-import { ReturnButton } from '@/components/UI';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import io, { Socket } from 'socket.io-client';
 
 interface Chat {
     chatId: string;

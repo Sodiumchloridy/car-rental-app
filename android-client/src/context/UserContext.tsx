@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '@/types/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 const UserContext = createContext<{
     user: User | null;
@@ -15,6 +16,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
     const logout = () => {
+        AsyncStorage.removeItem('userToken');
         setUser(null);
     };
 

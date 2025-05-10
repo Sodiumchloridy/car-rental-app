@@ -1,10 +1,10 @@
+import { styles } from "@/styles/CarCard.styles";
 import { Car, RootStackParamList } from "@/types/Types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useTheme } from "react-native-paper";
 import React from 'react';
-import { Text, View, TouchableNativeFeedback, Image } from 'react-native';
-import { styles } from "@/styles/CarCard.styles";
+import { Image, Text, TouchableNativeFeedback, View } from 'react-native';
+import { useTheme } from "react-native-paper";
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'CarDetail'>;
 

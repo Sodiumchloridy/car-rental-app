@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Text, View, TouchableNativeFeedback, ScrollView, BackHandler } from 'react-native';
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { DisplayWithLabel } from '@/components/UI';
-import { getCar } from '../../utils/FirebaseActions';
-import { Car } from '../../types/Types';
 import { styles } from '@/styles/BookingConfirmation.styles';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, ScrollView, Text, TouchableNativeFeedback, View } from 'react-native';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Car } from '../../types/Types';
+import { getCar } from '../../utils/FirebaseActions';
 
 const BookingConfirmPage = ({ route, navigation }: any) => {
     const { bookingID, bookingData } = route.params;

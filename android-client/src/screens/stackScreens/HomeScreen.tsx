@@ -1,8 +1,8 @@
-import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, StatusBar, Dimensions } from 'react-native';
-import Ionicons from "react-native-vector-icons/Ionicons";
-import LinearGradient from 'react-native-linear-gradient';
 import { useUser } from '@/context/UserContext';
+import React from 'react';
+import { Dimensions, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const { width } = Dimensions.get('window');
 

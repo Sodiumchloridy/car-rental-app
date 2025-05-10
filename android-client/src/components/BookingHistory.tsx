@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { Booking } from '../types/Types';
 import { useUser } from '@/context/UserContext';
-import { fetchBookingHistory } from '@/utils/FirebaseActions';
 import { styles } from '@/styles/BookingHistory.styles';
+import { fetchBookingHistory } from '@/utils/FirebaseActions';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { Booking } from '../types/Types';
 
 const BookingHistory = () => {
   type BookingWithId = Booking & { id: string };

@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
+import { ReturnButton } from '@/components/UI';
 import { updateCarListing } from '@/utils/FirebaseActions';
+import { Picker } from '@react-native-picker/picker';
+import React, { useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Alert,
     ActivityIndicator,
+    Alert,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
     StatusBar,
-    ScrollView
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { ReturnButton } from '@/components/UI';
-import { Picker } from '@react-native-picker/picker';
 
 const { height, width } = Dimensions.get('window');
 

@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Platform, Dimensions, StatusBar, ScrollView, FlatList } from 'react-native';
-import { DrawerNavigationProp } from '@react-navigation/drawer'
-import { useNavigation } from '@react-navigation/native';
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { Car, DrawerParamList, User } from '../../types/Types';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import { FloatingAction } from 'react-native-floating-action';
-import LinearGradient from 'react-native-linear-gradient';
-import config from '@/config.json';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BookingHistory from '../../components/BookingHistory'; // Import BookingHistory
 import { CarCard } from '@/components/CarCard';
+import config from '@/config.json';
 import { fetchUserCarListings } from '@/utils/FirebaseActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, FlatList, Platform, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import BookingHistory from '../../components/BookingHistory'; // Import BookingHistory
+import { Car, DrawerParamList, User } from '../../types/Types';
 
 const { height, width } = Dimensions.get('window');
 

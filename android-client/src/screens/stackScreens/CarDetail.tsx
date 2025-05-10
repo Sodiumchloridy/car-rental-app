@@ -1,10 +1,10 @@
-import React from 'react'
-import { Text, View, Image, Dimensions, StyleSheet, ScrollView, TouchableNativeFeedback, Alert, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { ReturnButton } from '@/components/UI';
-import { deleteCarListing } from '@/utils/FirebaseActions';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useUser } from '@/context/UserContext';
+import { deleteCarListing } from '@/utils/FirebaseActions';
+import React from 'react';
+import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // use Dimensions to get the height of screen
 const { height } = Dimensions.get('window');

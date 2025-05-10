@@ -1,22 +1,22 @@
+import { addCarListing } from '@/utils/FirebaseActions';
 import React, { useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Alert,
     ActivityIndicator,
+    Alert,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
     StatusBar,
-    ScrollView
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
-import { useUser } from '../../context/UserContext';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { addCarListing } from '@/utils/FirebaseActions';
+import { useUser } from '../../context/UserContext';
 
 const { height, width } = Dimensions.get('window');
 
