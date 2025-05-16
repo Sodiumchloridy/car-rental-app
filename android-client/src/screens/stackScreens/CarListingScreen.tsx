@@ -168,7 +168,7 @@ const ListCarScreen = ({ navigation }: any) => {
                             style={styles.input}
                             value={category}
                             onChangeText={setCategory}
-                            placeholder="e.g., Sedan, SUV, Hatchback"
+                            placeholder="e.g., Sedan, SUV, Luxury"
                             placeholderTextColor="#8E8E93"
                         />
                     </View>
