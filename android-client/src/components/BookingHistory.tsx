@@ -1,9 +1,10 @@
 import { useUser } from '@/context/UserContext';
 import { styles } from '@/styles/BookingHistory.styles';
 import { fetchBookingHistory } from '@/utils/FirebaseActions';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { Booking } from '../types/Types';
+import { useFocusEffect } from '@react-navigation/native';
 
 const BookingHistory = () => {
   type BookingWithId = Booking & { id: string };
@@ -12,24 +13,28 @@ const BookingHistory = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const bookings = await fetchBookingHistory(user?.uuid || '');
-        setHistory(bookings);
-      } catch (error) {
-        console.error('Error fetching booking history:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        if (!user?.uuid) {
+          setLoading(false);
+          return;
+        }
 
-    if (user?.uuid) {
+        try {
+          setLoading(true);
+          const bookings = await fetchBookingHistory(user.uuid);
+          setHistory(bookings);
+        } catch (error) {
+          console.error('Error fetching booking history:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
       fetchData();
-    } else {
-      setLoading(false);
-    }
-  }, [user?.uuid]);
+    }, [user?.uuid])
+  );
 
   if (loading) {
     return (
