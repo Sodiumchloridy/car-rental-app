@@ -52,16 +52,16 @@ const RegisterScreen = ({ navigation }: any) => {
         }
 
         // IC Number validation
-        const icNumberRegex = /^[0-9]{12}$/; // Assuming IC number is 12 digits
+        const icNumberRegex = /^\d{6}-\d{2}-\d{4}$/;
         if (!icNumberRegex.test(icNumber)) {
-            Alert.alert('Error', 'IC number must be 12 digits long.');
+            Alert.alert('Error', 'IC number must be in the format 123456-78-9012.');
             return;
         }
 
         // Phone Number validation
-        const phoneNumberRegex = /^[0-9]{10,15}$/;
+        const phoneNumberRegex = /^01\d-\d{7,8}$/;
         if (!phoneNumberRegex.test(phoneNumber)) {
-            Alert.alert('Error', 'Phone number must be between 10 to 15 digits long.');
+            Alert.alert('Error', 'Phone number must be in the format 01X-XXXXXXX.');
             return;
         }
 
