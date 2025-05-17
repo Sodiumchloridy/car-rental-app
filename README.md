@@ -8,6 +8,7 @@ This project consists of the following main components:
 
 - `android-client/`: React Native mobile application
 - `auth-service/`: Flask-based authentication backend
+- `chat-ws/`: WebSocket for chat fetching and storing
 
 ## Features
 
