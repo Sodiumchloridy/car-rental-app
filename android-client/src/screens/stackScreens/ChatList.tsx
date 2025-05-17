@@ -1,8 +1,9 @@
 import { ReturnButton } from '@/components/UI';
 import config from '@/config.json';
 import { useUser } from '@/context/UserContext';
+import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import io, { Socket } from 'socket.io-client';
@@ -23,61 +24,62 @@ const ChatList = ({ navigation }: any) => {
     const [loading, setLoading] = useState(true);
     const socketRef = useRef<Socket | null>(null);
 
+    const fetchChats = useCallback(async () => {
+        if (!user?.uuid) return;
+        setLoading(true);
+        try {
+            const res = await axios.get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`);
+            const chatsData = res.data;
+
+            const userIds = new Set<string>();
+            chatsData.forEach((chat: Chat) => {
+                userIds.add(chat.userId);
+                userIds.add(chat.ownerId);
+            });
+
+            userIds.delete(user.uuid);
+
+            const idToName: { [uuid: string]: string } = {};
+            await Promise.all(
+                Array.from(userIds).map(async (uuid) => {
+                    try {
+                        const resp = await axios.get(`${config.FLASK_API}/get_user_name?uuid=${uuid}`);
+                        idToName[uuid] = resp.data.name;
+                    } catch (err) {
+                        console.warn(`[fetchChats] Failed to fetch name for ${uuid}:`, err);
+                        idToName[uuid] = 'Unknown User';
+                    }
+                })
+            );
+
+            const enrichedChats = chatsData.map((chat: Chat) => {
+                const otherUserId = chat.ownerId === user.uuid ? chat.userId : chat.ownerId;
+                return {
+                    ...chat,
+                    displayName: idToName[otherUserId] || 'Unknown',
+                };
+            });
+
+            setChats(enrichedChats);
+        } catch (err) {
+            console.log('[fetchChats] Failed to fetch chats:', (err as any)?.message || err);
+        } finally {
+            setLoading(false);
+        }
+    }, [user?.uuid]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchChats();
+        }, [fetchChats])
+    );
+
     useEffect(() => {
-        const fetchChats = async () => {
-            if (!user?.uuid) return;
-
-            try {
-                const res = await axios.get(`${config.WEBSOCKET_SERVER}/get_user_chats?user_id=${user.uuid}`);
-                const chats = res.data;
-
-                const userIds = new Set<string>();
-                chats.forEach((chat: Chat) => {
-                    userIds.add(chat.userId);
-                    userIds.add(chat.ownerId);
-                });
-
-                userIds.delete(user.uuid);
-
-                const idToName: { [uuid: string]: string } = {};
-                await Promise.all(
-                    Array.from(userIds).map(async (uuid) => {
-                        try {
-                            const resp = await axios.get(`${config.FLASK_API}/get_user_name?uuid=${uuid}`);
-                            idToName[uuid] = resp.data.name;
-                        } catch (err) {
-                            console.warn(`[fetchChats] Failed to fetch name for ${uuid}:`, err);
-                            idToName[uuid] = 'Unknown User';
-                        }
-                    })
-                );
-
-                const enrichedChats = chats.map((chat: Chat) => {
-                    const otherUserId = chat.ownerId === user.uuid ? chat.userId : chat.ownerId;
-                    return {
-                        ...chat,
-                        displayName: idToName[otherUserId] || 'Unknown',
-                    };
-                });
-
-                setChats(enrichedChats);
-            } catch (err) {
-                console.log('[fetchChats] Failed to fetch chats:', (err as any)?.message || err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        // Initial fetch
-        fetchChats();
-
-        // Set up periodic fetching
-        const interval = setInterval(fetchChats, 1000);
+        if (!user?.uuid) return;
 
         socketRef.current = io(`${config.WEBSOCKET_SERVER}/chat`, {
             transports: ['websocket', 'polling'],
         });
-
 
         socketRef.current.on('connect', () => {
             console.log('[ChatList] Connected to chat socket');
@@ -88,9 +90,7 @@ const ChatList = ({ navigation }: any) => {
             console.log('[Socket] Disconnected from chat socket');
         });
 
-        // Cleanup interval and socket connection
         return () => {
-            clearInterval(interval);
             socketRef.current?.disconnect();
         };
     }, [user?.uuid]);
@@ -98,7 +98,7 @@ const ChatList = ({ navigation }: any) => {
     if (loading) {
         return <ActivityIndicator size="large" />;
     }
-    // copilot
+
     if (chats.length === 0) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
