@@ -198,6 +198,17 @@ def get_user_name():
     else:
         return jsonify({'error': 'User not found'}), 404
 
+@app.route('/check_email', methods=['GET'])
+def check_email():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    conn = get_db()
+    user = conn.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+    conn.close()
+
+    return jsonify({'exists': user is not None}), 200
 
 if __name__ == '__main__':
     init_db()

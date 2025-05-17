@@ -36,9 +36,25 @@ const RegisterScreen = ({ navigation }: any) => {
         }
 
         // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
         if (!emailRegex.test(email)) {
             Alert.alert('Error', 'Please enter a valid email address.');
+            return;
+        }
+
+        // Check if email is already registered
+        try {
+            const checkEmailResponse = await axios.get(`${config.FLASK_API}/check_email`, {
+                params: { email },
+                timeout: 5000
+            });
+
+            if (checkEmailResponse.data.exists) {
+                Alert.alert('Error', 'This email is already registered. Please use a different email.');
+                return;
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Unable to verify email availability. Please try again.');
             return;
         }
         
