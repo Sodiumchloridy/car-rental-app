@@ -140,6 +140,10 @@ Make sure your `tsconfig.json` has JSON module resolution enabled:
 }
 ```
 
+## 📜 Contributors
+
+See the full list of contributors in [CONTRIBUTORS.md](./CONTRIBUTORS.md).
+
 ## License
 
 This project is licensed under the MIT License.
