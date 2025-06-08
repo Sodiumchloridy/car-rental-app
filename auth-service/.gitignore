@@ -1,2 +1,57 @@
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+.Python
+build/
+dist/
+develop-eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.manifest
+*.egg
+.env/
+venv/
 .venv/
-auth.db
+
+# Poetry
+.poetry/
+.venv/
+poetry.lock  # Only if you want to regenerate it on every clone or if you're not sharing exact dependency versions across environments.
+# Generally, you *do* want to commit poetry.lock to ensure reproducible builds.
+# Remove the above line if you want to commit it.
+
+# Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.dm.py
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
+# MyPy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables (example)
+.env
+*.env
