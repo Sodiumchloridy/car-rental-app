@@ -2,7 +2,7 @@
 > This project is academic coursework for UECS3253 Wireless Application Development module.
 
 # Car Rental Application
-![car-rental-app-banner](https://github.com/user-attachments/assets/cffada5a-a9a5-4a45-8b2f-288844eab0d0)
+![car-rental-app-banner](https://github.com/user-attachments/assets/b1b1bd8b-01d7-4cc4-9268-237aedab077a)
 
 A comprehensive full-stack car rental management system designed to streamline the vehicle rental process for both customers and car owners. This application features a React Native mobile client for customer interactions, a Flask-based authentication backend, and a real-time chat websocket for instant customer support communication.
 
