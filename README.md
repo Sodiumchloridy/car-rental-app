@@ -4,7 +4,7 @@
 # Car Rental Application
 ![car-rental-app-banner](https://github.com/user-attachments/assets/cffada5a-a9a5-4a45-8b2f-288844eab0d0)
 
-A full-stack car rental management application with a React Native mobile client and authentication backend.
+A comprehensive full-stack car rental management system designed to streamline the vehicle rental process for both customers and car owners. This application features a React Native mobile client for customer interactions, a Flask-based authentication backend, and a real-time chat websocket for instant customer support communication.
 
 ## Project Structure
 
@@ -12,44 +12,11 @@ This project consists of the following main components:
 
 - `android-client/`: React Native mobile application
 - `auth-service/`: Flask-based authentication backend
-- `chat-ws/`: WebSocket for chat fetching and storing
-
-## Features
-
-### Mobile Application
-- User authentication (login/registration)
-- Browse cars by category (SUV, Sedan, Luxury)
-- Car details view with specifications
-- Booking system with date selection
-- Online payment processing
-- Booking confirmation and history
-- Offline functionality with SQLite data storage
-- Firebase integration for data management
-
-### Authentication Service
-- User registration with email, password, name, IC number, and phone number
-- Secure login with JWT authentication
-- User profile management
-- SQLite database for user storage
-
-## Technical Stack
-
-### Mobile Client
-- React Native
-- Firebase Firestore
-- SQLite (local storage)
-- React Navigation
-- Linear Gradient
-- Vector Icons
-
-### Authentication Service
-- Flask
-- SQLite
-- JWT Authentication
+- `chat-websocket/`: WebSocket for chat fetching and storing
 
 ## Getting Started
 
-### Setting Up the React Native Client
+### 1. Setting Up the React Native Client
 
 1. Navigate to the Android client directory:
 ```bash
@@ -77,40 +44,57 @@ cd ..
 npm start
 ```
 
-### Setting Up the Authentication Service
+### 2. Setting Up the Authentication Service
 
-1. Navigate to the authentication service directory:
+1. Navigate to the auth-service directory
 ```bash
 cd auth-service
 ```
 
-2. Install dependencies:
+2. Install the poetry dependency manager
+```bash
+pip install poetry
+```
+
+3. Install the required dependencies:
 ```bash
 poetry install
 ```
 
-3. Run the server:
+4. Run the server:
 ```bash
 poetry run python server.py
 ```
 
 The authentication server will start on port 5000: http://localhost:5000
-### Setting Up the Chat WebSocket
 
-1. Navigate to the Chat WebSocket directory:
+### 3. Setting Up the Chat WebSocket
+
+1. Navigate to the auth-service directory
 ```bash
-cd chat-ws
+cd chat-websocket
 ```
 
-2. Run the websocket server:
+2. Install the poetry dependency manager
 ```bash
-python chatWebSocket.py
+pip install poetry
+```
+
+3. Install the required dependencies:
+```bash
+poetry install
+```
+
+4. Run the server:
+```bash
+poetry run python websocket.py
 ```
 
 The WebSocket server will start on port 5001: http://localhost:5001
+
 ## Integration
 
-To connect the React Native app with the authentication service, create a `config.json` file in your React Native project's `src` directory:
+To connect the React Native app with the authentication service, modify the `config.json` file in your React Native project's `src` directory:
 
 ```json
 {
@@ -122,8 +106,8 @@ To connect the React Native app with the authentication service, create a `confi
   // Use "http://YOUR_IP_ADDRESS:5001" for physical devices
 }
 ```
-
-Then import it in your files:
+## Development
+To import the configurations in your files:
 
 ```typescript
 // Direct import
@@ -143,11 +127,3 @@ Make sure your `tsconfig.json` has JSON module resolution enabled:
   }
 }
 ```
-
-## 📜 Contributors
-
-See the full list of contributors in [CONTRIBUTORS.md](./CONTRIBUTORS.md).
-
-## License
-
-This project is licensed under the MIT License.
